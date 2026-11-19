@@ -5,12 +5,11 @@ const cors = require('cors');
 const cron = require('node-cron');
 require('dotenv').config();
 
-// Database Connection
-require('./db/dbconnect');
+// Cached Database Connection
+const connectDB = require('./db/dbconnect');
 
-// Models
-const AuctionItem = require('./models/auctions');
-const Bidding = require('./models/biddings');
+// Scheduled Worker
+const finalizeExpiredAuctions = require('./cron-job');
 
 // Route Handlers
 const authRoutes = require('./routes/auth');
@@ -21,38 +20,33 @@ const app = express();
 const server = http.createServer(app);
 
 const PORT = process.env.PORT || 5001;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
-// Setup Socket.io
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT'],
-  },
-});
-
-app.set('io', io);
-
-// Socket.io Connection Logic
-io.on('connection', (socket) => {
-  // Join a specific auction room for live updates
-  socket.on('join_auction', (auctionId) => {
-    if (auctionId) {
-      socket.join(`auction_${auctionId}`);
-    }
+// Setup Socket.io for local / stateful environments
+let io = null;
+if (!process.env.VERCEL) {
+  io = new Server(server, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT'],
+    },
   });
 
-  // Leave auction room
-  socket.on('leave_auction', (auctionId) => {
-    if (auctionId) {
-      socket.leave(`auction_${auctionId}`);
-    }
+  io.on('connection', (socket) => {
+    socket.on('join_auction', (auctionId) => {
+      if (auctionId) {
+        socket.join(`auction_${auctionId}`);
+      }
+    });
+
+    socket.on('leave_auction', (auctionId) => {
+      if (auctionId) {
+        socket.leave(`auction_${auctionId}`);
+      }
+    });
   });
 
-  socket.on('disconnect', () => {
-    // Client disconnected
-  });
-});
+  app.set('io', io);
+}
 
 // Middleware
 app.use(express.json());
@@ -63,83 +57,63 @@ app.use(
   })
 );
 
-// Health Check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', uptime: process.uptime(), timestamp: new Date() });
+// Database connection middleware for serverless requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection error in request:', error);
+    res.status(500).json({ message: 'Database connection failed' });
+  }
 });
 
-// Mount Routes (Mounting on root preserves 100% backward compatibility with frontend endpoints)
+// Health Check
+app.get(['/', '/health', '/api/health'], (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    serverless: !!process.env.VERCEL,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Vercel Serverless Cron Endpoint
+// Vercel Cron sends a GET request to /api/cron or /cron on a recurring schedule
+app.get(['/cron', '/api/cron'], async (req, res) => {
+  try {
+    const result = await finalizeExpiredAuctions(io);
+    return res.status(200).json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      ...result,
+    });
+  } catch (error) {
+    console.error('Vercel Cron Execution Error:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Mount Routes (Mounting on root & /api ensures full compatibility across Vercel & local endpoints)
 app.use('/', authRoutes);
 app.use('/', auctionRoutes);
 app.use('/', bidRoutes);
 
-// Also mount under /api prefix for standard REST convention
 app.use('/api/auth', authRoutes);
 app.use('/api/auctions', auctionRoutes);
 app.use('/api/bids', bidRoutes);
 
-// Cron Job: Evaluates expired auctions every 30 seconds
-// (Replaced the wasteful every-1-second poll '* * * * * *' with a reliable 30-second interval)
-cron.schedule('*/30 * * * * *', async () => {
-  try {
-    const now = new Date();
-
-    // Find all expired auctions that are still marked open
-    const expiredAuctions = await AuctionItem.find({
-      closingTime: { $lte: now },
-      isClosed: false,
-    });
-
-    if (expiredAuctions.length === 0) return;
-
-    console.log(`[Cron] Found ${expiredAuctions.length} expired auction(s) to finalize.`);
-
-    for (const auction of expiredAuctions) {
-      // Find the highest bid placed for this auction
-      const highestBid = await Bidding.findOne({ auctionId: auction._id }).sort({
-        bidAmount: -1,
-      });
-
-      if (highestBid) {
-        // Mark winning bid
-        highestBid.successfullBid = true;
-        highestBid.successfulBid = true;
-        highestBid.status = 'won';
-        await highestBid.save();
-
-        // Mark remaining bids as lost
-        await Bidding.updateMany(
-          { auctionId: auction._id, _id: { $ne: highestBid._id } },
-          { $set: { status: 'lost', successfullBid: false, successfulBid: false } }
-        );
-
-        auction.highestBidderId = highestBid.userId;
-        auction.highestBidId = highestBid._id;
-      }
-
-      auction.isClosed = true;
-      await auction.save();
-
-      // Real-time broadcast that auction closed
-      io.to(`auction_${auction._id}`).emit('auction_closed', {
-        auctionId: auction._id,
-        isClosed: true,
-        winnerId: auction.highestBidderId,
-        finalBid: auction.currentBid,
-      });
-      io.emit('auction_feed_update', {
-        auctionId: auction._id,
-        isClosed: true,
-      });
-
-      console.log(`[Cron] Auction "${auction.itemName}" (${auction._id}) closed successfully.`);
+// Local Cron Job: Runs when NOT in Vercel serverless mode
+if (!process.env.VERCEL) {
+  cron.schedule('*/30 * * * * *', async () => {
+    try {
+      await finalizeExpiredAuctions(io);
+    } catch (err) {
+      console.error('[Local Cron] Error finalizing auction items:', err);
     }
-  } catch (err) {
-    console.error('[Cron] Error finalizing auction items:', err);
-  }
-});
+  });
+}
 
-// Centralized 404 handler for undefined routes
+// Centralized 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.originalUrl} not found` });
 });
@@ -147,13 +121,18 @@ app.use((req, res) => {
 // Centralized Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Server Error:', err);
-  res.status(500).json({ message: 'Internal Server Error', error: process.env.NODE_ENV === 'development' ? err.message : undefined });
+  res.status(500).json({
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  });
 });
 
-// Start Server
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Socket.io enabled and listening for real-time bids`);
-});
+// Start listening if running directly as main entry (Local Development)
+if (!process.env.VERCEL && require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Local Socket.io enabled and listening for real-time bids`);
+  });
+}
 
-module.exports = { app, server };
+module.exports = app;

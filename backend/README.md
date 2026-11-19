@@ -1,85 +1,70 @@
-# Online Auction Platform - Backend API
+# Online Auction Platform - Serverless Backend (Vercel Ready)
 
-RESTful API and WebSocket server for the Online Auction Platform, built with **Node.js**, **Express**, **MongoDB/Mongoose**, and **Socket.io**.
-
----
-
-## 🚀 Features
-
-- **Real-Time Bidding**: Powered by **Socket.io** room broadcasts (`auction_<id>`).
-- **Automated Settlement Worker**: Background cron (`node-cron`) automatically finalizes expired auctions and declares winning bids.
-- **JWT Authentication & Role Control**: Distinct roles for Buyers and Sellers.
-- **Shill-Bidding Prevention**: Sellers cannot bid on their own items.
-- **Atomic Concurrency Handling**: High-concurrency safe bidding logic.
-- **Centralized Error & Token Expiry Handling**: Clean responses without request hanging.
+RESTful API and Serverless Function backend for the Online Auction Platform, designed to run seamlessly on **Vercel Serverless Functions** and locally on **Node.js**.
 
 ---
 
-## 🛠 Tech Stack
+## ⚡ Serverless Architecture on Vercel
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB with Mongoose ODM
-- **Real-Time**: Socket.io
-- **Security**: JSON Web Tokens (jsonwebtoken), bcryptjs
-- **Scheduling**: node-cron
-
----
-
-## ⚙️ Setup & Installation
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Configure environment:
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` as needed:
-   ```env
-   PORT=5001
-   MONGODB_URI=mongodb://localhost:27017/auctionDB
-   JWT_SECRET=super_secret_auction_jwt_key_2025_ey_gds
-   CLIENT_ORIGIN=http://localhost:5173
-   NODE_ENV=development
-   ```
-
-3. Run smoke test:
-   ```bash
-   npm test
-   ```
-
-4. Start server:
-   ```bash
-   npm start
-   ```
+1. **Serverless Function Entry (`api/index.js`)**:
+   - Vercel routes all API requests through `api/index.js` via `vercel.json` rewrites.
+2. **Global Cached Mongoose Connection**:
+   - Implements the official serverless connection caching pattern to prevent connection pool exhaustion during function re-invocations and cold starts.
+3. **Automated Auction Settlement via Vercel Cron**:
+   - Instead of a persistent daemon, Vercel triggers `/api/cron` every minute via `vercel.json` to close expired auctions and record winning bids automatically.
+4. **Dual-Mode Capability**:
+   - **On Vercel**: Runs 100% serverlessly.
+   - **Locally**: Runs as a standard Express + Socket.io server with `npm start`.
 
 ---
 
-## 📡 API Endpoints
+## 🚀 Deploying to Vercel
 
-### Auth (`/`)
-- `POST /signup` - User registration
-- `POST /signin` - User login & token generation
-- `GET /validate-token` - Token verification
-- `GET /profile` - Logged-in user profile
-- `POST /updateprofile` - Edit profile info
+### Method 1: Using the Vercel Web Dashboard (Recommended)
 
-### Auctions (`/`)
-- `POST /auction` - Create auction (Seller)
-- `GET /auctions` - List all auctions
-- `GET /auctions/:id` - Single auction details
-- `GET /getauction/:id` - Detailed auction with populated bids
-- `GET /getAuctionsForSeller` - Auctions posted by seller
-- `GET /getauctionresult/:id` - Settlement outcome
-- `PUT /auction/:id` - Edit auction (Owner only)
-- `GET /getearnings` - Seller revenue records
-- `GET /getstats` - Seller analytics
+1. Push your backend repository to GitHub.
+2. Log in to [Vercel](https://vercel.com) and click **"Add New Project"**.
+3. Select your backend repository.
+4. In **Environment Variables**, add:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string (e.g., `mongodb+srv://<user>:<password>@cluster.mongodb.net/auctionDB?retryWrites=true&w=majority`)
+   - `JWT_SECRET`: A secure random string for JWT signing
+   - `CLIENT_ORIGIN`: Your frontend URL (e.g. `https://your-frontend.vercel.app` or `*`)
+   - `NODE_ENV`: `production`
+5. Click **Deploy**.
 
-### Bids (`/`)
-- `POST /bid/:id` - Place a bid (broadcasts via WebSockets)
-- `GET /getauctionbidded` - Active auctions bid on
-- `GET /getBidsForUser` - Complete user bidding history
-- `GET /getTotalSpentByUser` - Total spent on won auctions
+---
+
+### Method 2: Using the Vercel CLI
+
+```bash
+# 1. Install Vercel CLI (if not already installed)
+npm install -g vercel
+
+# 2. Login
+vercel login
+
+# 3. Deploy
+cd backend
+vercel --prod
+```
+
+---
+
+## 💻 Local Development
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+*Server will start on `http://localhost:5001` with local Socket.io enabled.*
+
+---
+
+## 📡 Key Endpoints
+
+- `GET /health` or `GET /api/health` - Serverless status & uptime
+- `GET /api/cron` - Vercel Cron trigger for auction finalization
+- `POST /signin` & `POST /signup` - Authentication
+- `POST /auction` & `GET /auctions` - Auction listings
+- `POST /bid/:id` - Concurrency-safe bidding
