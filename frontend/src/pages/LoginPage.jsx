@@ -1,63 +1,110 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const email = event.target.email_address.value;
-    const password = event.target.password.value;
+    if (!email || !password) {
+      toast.error('Please enter both email and password');
+      return;
+    }
 
+    setSubmitting(true);
     try {
-      const response = await axios.post('http://localhost:5001/signin', {
-        email,
-        password
-      });
-
-      const { token, user } = response.data;
-      Cookies.set('auth_token', token, { expires: 7 }); // Token will be stored in the cookie for 7 days
-      alert('Login successful! Token stored in cookie.');
-
-      alert(user);
-
-      if (user === 0) {
-        navigate('/buyer');
+      const result = await login(email, password);
+      if (result.success) {
+        toast.success('Login successful!');
+        if (String(result.userType) === '0') {
+          navigate('/buyer');
+        } else {
+          navigate('/seller');
+        }
       } else {
-        navigate('/seller');
+        toast.error(result.message);
       }
-
     } catch (error) {
-      console.error('Error during login:', error);
-      alert('Login failed. Please check your credentials.');
+      console.error('Login error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="container text-left" style={{ maxWidth: "450px", background: "#E5E4E2", color: "black" }}>
-      <h1 className="text-center my-4" style={{ color: "black" }}>Auction Site</h1> {/* Added heading title */}
-      <h2 className="text-center my-3" style={{ color: "black" }}>Sign In</h2>
-      <form className="mx-auto" style={{ maxWidth: '400px' }} onSubmit={handleLogin}>
-        <div className="form-group m-4">
-          <label style={{ color: "black" }}>Email address</label>
-          <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">@</span>
-            <input name='email_address' type="text" className="form-control" placeholder="Email Address" aria-label="Username" aria-describedby="basic-addon1" />
+    <div
+      className="container p-4 shadow-lg rounded"
+      style={{
+        maxWidth: '450px',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
+      }}
+    >
+      <div className="text-center mb-4">
+        <h2 className="fw-bold text-primary mb-1">AuctionHub</h2>
+        <p className="text-muted small">Sign in to participate in live auctions</p>
+      </div>
+
+      <form onSubmit={handleLogin}>
+        <div className="mb-3">
+          <label className="form-label fw-semibold text-dark">Email Address</label>
+          <div className="input-group">
+            <span className="input-group-text bg-light text-muted">@</span>
+            <input
+              type="email"
+              className="form-control"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoFocus
+            />
           </div>
         </div>
-        <div className="form-group m-4">
-          <label style={{ color: "black" }}>Password</label>
-          <input name="password" type="password" className="form-control" placeholder="Enter password" />
+
+        <div className="mb-4">
+          <label className="form-label fw-semibold text-dark">Password</label>
+          <input
+            type="password"
+            className="form-control"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
-        <div className="text-center mt-3 mb-3">
-          <button type="submit" className="form-control btn btn-primary">Sign In</button>
-        </div>
+
+        <button
+          type="submit"
+          className="btn btn-primary w-100 py-2 fw-semibold"
+          disabled={submitting}
+        >
+          {submitting ? (
+            <span>
+              <span className="spinner-border spinner-border-sm me-2" role="status" />
+              Signing in...
+            </span>
+          ) : (
+            'Sign In'
+          )}
+        </button>
       </form>
-      <p className="text-center mt-3 mb-5">
-        Don't have an account? <Link to="/signup">Register here</Link> 
-      </p>
+
+      <div className="text-center mt-4 pt-2 border-top">
+        <p className="text-muted mb-0 small">
+          Don't have an account?{' '}
+          <Link to="/signup" className="text-primary fw-semibold text-decoration-none">
+            Register here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

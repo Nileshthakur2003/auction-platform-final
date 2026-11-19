@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import ApiConnector from '../../components/apiconnector';
 import SellerSidebar from '../../components/SellerSidebar';
 
 const SellerAuctionResult = () => {
   const { id } = useParams();
-  const [auction, setAuction] = useState({});
+  const [auction, setAuction] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAuction = async () => {
@@ -14,10 +16,9 @@ const SellerAuctionResult = () => {
         const response = await ApiConnector.get(`/getauctionresult/${id}`);
         setAuction(response.data);
       } catch (error) {
-        if(error.response.data.error == "TokenExpiredError"){
-            navigate('/signin');
-          }
         console.error('Error fetching auction result data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -25,44 +26,109 @@ const SellerAuctionResult = () => {
   }, [id]);
 
   const formatDate = (date) => {
-    return moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
+    return date ? moment(date).format('MMMM Do YYYY, h:mm a') : 'N/A';
   };
 
-  return (
-    <div className="container-fluid">
-      <div className="row">
-        {/* Sidebar Section */}
-        <SellerSidebar />
+  if (loading) {
+    return (
+      <div className="container-fluid" style={{ height: '100%' }}>
+        <div className="row" style={{ height: '100%' }}>
+          <SellerSidebar />
+          <div className="col-md-10 offset-md-2 d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <div className="spinner-border text-primary" role="status" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-        {/* Main Content Section */}
-        <div className="col-md-10 offset-md-2" style={{ padding: '20px', overflowY: 'scroll', height: '100vh' }}>
-          <div className="card mt-5 shadow-sm">
-            <div className="card-body" style={{ fontSize: '1.25rem' }}>
-              <h2 className="card-title">Auction Result</h2>
-              <div className="row">
-                <div className="col-md-12">
-                  <h3>Auction Item: {auction.itemName}</h3>
-                  <p>Description: {auction.description}</p>
-                  <p><strong>Auction ID:</strong> {auction.auctionId}</p>
-                </div>
+  if (!auction) {
+    return (
+      <div className="container-fluid" style={{ height: '100%' }}>
+        <div className="row" style={{ height: '100%' }}>
+          <SellerSidebar />
+          <div className="col-md-10 offset-md-2 p-5">
+            <div className="alert alert-danger">Auction result not found.</div>
+            <button className="btn btn-primary" onClick={() => navigate('/seller/all-auctions')}>
+              Back to My Auctions
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container-fluid" style={{ height: '100%' }}>
+      <div className="row" style={{ height: '100%' }}>
+        <SellerSidebar />
+        <div
+          className="col-md-10 offset-md-2"
+          style={{ padding: '30px', overflowY: 'auto', height: '100vh', backgroundColor: '#f8fafc' }}
+        >
+          <div className="mb-4">
+            <button
+              className="btn btn-outline-secondary btn-sm mb-2"
+              onClick={() => navigate('/seller/current-auctions')}
+            >
+              &larr; Back to My Auctions
+            </button>
+            <h2 className="fw-bold text-dark mb-0">Auction Settlement Result</h2>
+          </div>
+
+          <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+              <div>
+                <h3 className="fw-bold text-success mb-1">{auction.itemName}</h3>
+                <p className="text-muted mb-0 small">Item ID: {auction.auctionId}</p>
               </div>
-              <div className="row mt-4">
-                <div className="col-md-6">
-                  <p><strong>Final Bid:</strong> {auction.currentBid}</p>
-                  <p><strong>Winning Bidder:</strong> {auction.highestBidder}</p>
-                </div>
-                <div className="col-md-6">
-                  <p><strong>Opening Time:</strong> {formatDate(auction.openingTime)}</p>
-                  <p><strong>Closing Time:</strong> {formatDate(auction.closingTime)}</p>
-                  <p><strong>Total Bids:</strong> {auction.bids?.length}</p>
-                </div>
-              </div>
-              {auction.isClosed && (
-                <div className="alert alert-info mt-4" role="alert">
-                  This Auction is closed now.
-                </div>
-              )}
+              <span className="badge bg-secondary px-3 py-2 fs-6">Closed Auction</span>
             </div>
+
+            <p className="text-muted fs-6 mb-4">{auction.description}</p>
+
+            <div className="row g-4 mb-4">
+              <div className="col-md-6">
+                <div className="p-4 rounded-3 bg-light border">
+                  <span className="text-muted small text-uppercase fw-bold d-block mb-1">
+                    Final Realized Price
+                  </span>
+                  <div className="display-6 fw-bold text-success mb-2">
+                    ${Number(auction.currentBid || 0).toLocaleString()}
+                  </div>
+                  <div className="small">
+                    <strong>Highest Bidder: </strong>
+                    <span className="badge bg-success-subtle text-success fs-6 ms-1">
+                      {auction.highestBidder || 'No Bids Placed'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="p-4 rounded-3 bg-light border h-100 d-flex flex-column justify-content-center">
+                  <div className="mb-2">
+                    <strong className="text-muted">Start Date:</strong> {formatDate(auction.openingTime)}
+                  </div>
+                  <div className="mb-2">
+                    <strong className="text-muted">Closed Date:</strong> {formatDate(auction.closingTime)}
+                  </div>
+                  <div>
+                    <strong className="text-muted">Total Bids Received:</strong>{' '}
+                    <span className="badge bg-primary ms-1">{auction.bids?.length || 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {auction.isClosed && (
+              <div className="alert alert-success d-flex align-items-center mb-0" role="alert">
+                <span className="fs-4 me-3">🎉</span>
+                <div>
+                  This auction is complete. The winning bidder has been recorded for this listing.
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

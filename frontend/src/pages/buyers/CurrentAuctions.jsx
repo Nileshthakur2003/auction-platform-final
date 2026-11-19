@@ -1,79 +1,118 @@
 import React, { useState, useEffect } from 'react';
-import BuyerSidebar from '../../components/BuyerSidebar'; // Make sure to import the BuyerSidebar component
+import { useNavigate } from 'react-router-dom';
+import BuyerSidebar from '../../components/BuyerSidebar';
 import ApiConnector from '../../components/apiconnector';
 
 const CurrentBuyerAuctions = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
   const [auctions, setAuctions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch auction data from the backend
     const fetchAuctions = async () => {
       try {
         const response = await ApiConnector.get('/getauctionbidded');
-        setAuctions(response.data);
+        setAuctions(response.data || []);
       } catch (error) {
         console.error('Error fetching auction data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAuctions();
   }, []);
 
-  const filteredAuctions = auctions.filter(
-    (auction) =>
-      (filterStatus === 'All' || auction.status === filterStatus) &&
-      auction.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAuctions = auctions.filter((auction) =>
+    (auction.itemName || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <BuyerSidebar /> {/* Include the BuyerSidebar component */}
-        <div className="col-md-10 offset-md-2" style={{ paddingRight: '0', padding: '20px', overflowY: 'scroll', height: '100vh' }}>
-          <h2 className='mt-5'>Ongoing Auctions</h2>
+    <div className="container-fluid" style={{ height: '100%' }}>
+      <div className="row" style={{ height: '100%' }}>
+        <BuyerSidebar />
+        <div
+          className="col-md-10 offset-md-2"
+          style={{ padding: '30px', overflowY: 'auto', height: '100vh', backgroundColor: '#f8fafc' }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h2 className="fw-bold text-dark mb-1">My Active Auctions</h2>
+              <p className="text-muted mb-0">Auctions where you have placed bids that are currently ongoing</p>
+            </div>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/buyer/all-auctions')}
+            >
+              Browse All Listings
+            </button>
+          </div>
 
-          <div className="d-flex justify-content-between mt-4">
+          <div className="card border-0 shadow-sm rounded-3 p-3 bg-white mb-4">
             <input
               type="text"
-              className="form-control w-50"
-              placeholder="Search auctions..."
+              className="form-control"
+              placeholder="🔍 Search in your active auctions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <select
-              className="form-control w-25"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="All">All</option>
-              <option value="Winning">Winning</option>
-              <option value="Outbid">Outbid</option>
-            </select>
           </div>
 
-          <div className="row justify-content-center mt-4">
-            {filteredAuctions.length > 0 ? (
-              filteredAuctions.map((item, index) => (
-                <div className="col-md-6 mb-4" key={index}>
-                  <div className="card">
-                    <div className="card-body">
-                      <h5 className="card-title">{item.itemName}</h5>
-                      <p className="card-text">{item.description}</p>
-                      <p className="card-text"><strong>Current Bid: </strong>{item.currentBid}</p>
-                      <p className="card-text"><strong>Status: </strong>{item.status}</p>
-                      <button className="btn btn-primary">View Auction</button>
+          {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status" />
+            </div>
+          ) : filteredAuctions.length === 0 ? (
+            <div className="card border-0 shadow-sm rounded-3 p-5 text-center bg-white">
+              <p className="text-muted fs-5 mb-3">You haven't placed bids on any currently active auctions.</p>
+              <div>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate('/buyer/all-auctions')}
+                >
+                  Explore Live Auctions &rarr;
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="row g-4">
+              {filteredAuctions.map((item) => (
+                <div className="col-md-6" key={item._id}>
+                  <div className="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                    <div className="card-header bg-dark text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                      <span className="text-truncate">{item.itemName}</span>
+                      <span className="badge bg-success">Live Bidding</span>
+                    </div>
+                    <div className="card-body d-flex flex-column justify-content-between">
+                      <div>
+                        <p className="text-muted small mb-3">{item.description}</p>
+                        <div className="bg-light p-3 rounded mb-3">
+                          <span className="small text-muted d-block">Current Top Bid</span>
+                          <span className="fs-4 fw-bold text-primary">
+                            ${Number(item.currentBid || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="small text-muted mb-1">
+                          <strong>Closes:</strong>{' '}
+                          {item.closingTime ? new Date(item.closingTime).toLocaleString() : 'N/A'}
+                        </div>
+                      </div>
+
+                      <div className="mt-3">
+                        <button
+                          className="btn btn-primary w-100 fw-semibold"
+                          onClick={() => navigate(`/buyer/auction/${item._id}`)}
+                        >
+                          View & Increase Bid &rarr;
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="col-md-12">
-                <p className="text-center mt-4">No currently bidded auctions</p>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

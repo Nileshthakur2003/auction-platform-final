@@ -1,152 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ApiConnector from './apiconnector';
-import Cookies from 'js-cookie'; // Ensure js-cookie is installed: npm install js-cookie
-
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const SellerSidebar = () => {
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    const validateToken = async () => {
-      try {
-        const response = await ApiConnector.get('/validate-token');
-        setUser(response.data); // Assuming the user data is returned in response.data.user
-      } catch (error) {
-        console.error('Error validating token:', error);
-        navigate('/signin'); // Navigate to sign-in page if there's an error
-      }
-    };
-
-    validateToken();
-  }, [navigate]);
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
-
-  const handleLogout = async () => {
-    try {
-
-      // Clear the authentication token from cookies
-      Cookies.remove('auth_token');
-
-      // Redirect to the sign-in page
-      navigate('/signin');
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
-
-  const sidebarStyle = {
-    paddingLeft: '0',
-    backgroundColor: '#2C3E50',
-    height: '100%',  // Set height to 100%
-    position: 'fixed',
-    left: '0',
-    zIndex: '1000'
-  };
-
-  const listGroupStyle = {
-    marginLeft: '20px',
-    borderRadius: '0px',
-    marginTop: '20px' /* Reduced marginTop to account for user card */
-  };
-
-  const listGroupItemStyle = {
-    color: '#0da4ca',
-    backgroundColor: '#00264d',
-    border: 'none',
-    padding: '15px 20px',
-    marginBottom: '10px',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    transition: 'background-color 0.3s ease-in-out, color 0.3s ease-in-out',
-    borderRadius: '8px', // Added border-radius for rounded borders
-  };
-
-  const listGroupItemHoverStyle = {
-    backgroundColor: '#005780',
-    color: '#FFFFFF'
-  };
-
-  const handleMouseOver = (e) => {
-    Object.assign(e.currentTarget.style, listGroupItemHoverStyle);
-  };
-
-  const handleMouseOut = (e) => {
-    e.currentTarget.style.backgroundColor = '#00264d';
-    e.currentTarget.style.color = '#0da4ca';
-  };
+  const navItems = [
+    { label: '📊 Dashboard', path: '/seller' },
+    { label: '➕ Post New Auction', path: '/seller/post-auction' },
+    { label: '⏳ My Active Listings', path: '/seller/current-auctions' },
+    { label: '📦 All My Auctions', path: '/seller/all-auctions' },
+    { label: '💰 Earnings & Sales', path: '/seller/earnings' },
+    { label: '👤 Seller Profile', path: '/seller/profile' },
+  ];
 
   return (
-    <div className="col-md-2 fixed-left" style={sidebarStyle}>
-      {user && (
-        <div className="card" style={{ margin: '20px', marginTop: '10px', backgroundColor: '#34495E', color: '#ECF0F1' }}>
-          <div className="card-body">
-            <h5 className="card-title">Welcome, {user.username}</h5>
-            <p className="card-text">{user.email}</p>
-            <button className="btn btn-danger mt-3" onClick={handleLogout}>Logout</button>
-          </div>
+    <div
+      className="col-md-2 fixed-left d-flex flex-column justify-content-between p-3 text-white"
+      style={{
+        backgroundColor: '#0f172a',
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 1000,
+        overflowY: 'auto',
+      }}
+    >
+      <div>
+        <div className="mb-4 text-center border-bottom pb-3">
+          <h4 className="fw-bold text-white mb-0">AuctionHub</h4>
+          <span className="badge bg-success text-uppercase mt-1">Seller Portal</span>
         </div>
-      )}
-      <ul className="list-group" style={listGroupStyle}>
-        <li
-          className="list-group-item"
-          style={listGroupItemStyle}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onClick={() => handleNavigation('/seller/')}
+
+        {user && (
+          <div className="card mb-3 border-0" style={{ backgroundColor: '#1e293b', color: '#f1f5f9' }}>
+            <div className="card-body p-3">
+              <div className="small text-muted mb-1">Signed in as</div>
+              <h6 className="card-title fw-bold mb-1 text-truncate">{user.username}</h6>
+              <p className="card-text small text-muted text-truncate mb-0">{user.email}</p>
+            </div>
+          </div>
+        )}
+
+        <ul className="nav nav-pills flex-column mb-auto gap-2">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <li className="nav-item" key={item.path}>
+                <button
+                  type="button"
+                  className={`nav-link w-100 text-start d-flex align-items-center py-2 px-3 rounded ${
+                    isActive ? 'active bg-success text-white fw-bold' : 'text-light'
+                  }`}
+                  style={{
+                    backgroundColor: isActive ? '#16a34a' : 'transparent',
+                    border: 'none',
+                    transition: 'all 0.2s',
+                  }}
+                  onClick={() => navigate(item.path)}
+                >
+                  {item.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className="pt-3 border-top border-secondary">
+        <button
+          className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-2"
+          onClick={logout}
         >
-          Dashboard
-        </li>
-        <li
-          className="list-group-item"
-          style={listGroupItemStyle}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onClick={() => handleNavigation('/seller/post-auction')}
-        >
-          + New Auction
-        </li>
-        <li
-          className="list-group-item"
-          style={listGroupItemStyle}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onClick={() => handleNavigation('/seller/earnings')}
-        >
-          $ Earnings
-        </li>
-        <li
-          className="list-group-item"
-          style={listGroupItemStyle}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onClick={() => handleNavigation('/seller/current-auctions')}
-        >
-          My Auctions
-        </li>
-        <li
-          className="list-group-item"
-          style={listGroupItemStyle}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onClick={() => handleNavigation('/seller/all-auctions')}
-        >
-          All Auctions
-        </li>
-        <li
-          className="list-group-item"
-          style={listGroupItemStyle}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          onClick={() => handleNavigation('/seller/profile')}
-        >
-          My Profile
-        </li>
-      </ul>
+          🚪 Sign Out
+        </button>
+      </div>
     </div>
   );
 };

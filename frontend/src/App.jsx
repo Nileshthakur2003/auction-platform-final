@@ -1,16 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardBuyer from './pages/DashboardBuyer';
 import DashboardSeller from './pages/DashboardSeller';
 import NewAuction from './pages/sellers/PostAuction';
-import AuctionDetail from './pages/AuctionDetails';
-import Navbar from './components/NavBar';
-import { useState } from 'react';
 import CurrentAuctions from './pages/sellers/CurrentAuctions';
-import Earnings from './pages/sellers/earnings';
+import Earnings from './pages/sellers/Earnings'; // Case-sensitivity fix!
 import MyProfile from './pages/sellers/SellerProfile';
 import AllAuctionsForSeller from './pages/sellers/AllAuctions';
 import CurrentBuyerAuctions from './pages/buyers/CurrentAuctions';
@@ -23,42 +24,147 @@ import BuyerAuctionResult from './pages/buyers/AuctionResultForBuyer';
 import SellerAuctionResult from './pages/sellers/AuctionResultForSeller';
 
 const App = () => {
-  const [auctions, setAuctions] = useState([
-    { title: 'Vintage Car', description: 'A classic vintage car.', startingBid: '5000' },
-    { title: 'Antique Vase', description: 'A beautiful antique vase.', startingBid: '2000' }
-  ]);
-
-
   return (
-    <Router>
-      {/* <Navbar /> */}
-      <div className="d-flex justify-content-center align-items-center vh-100 vw-100 no-scroll-x">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signin" element={<LoginPage />} />
-          <Route path="/signup" element={<RegisterPage />} />
-          <Route path="/buyer" element={<DashboardBuyer auctions={auctions} />} />
-          <Route path="/seller" element={<DashboardSeller auctions={auctions} />} />
-          <Route path="/auction-detail" element={<AuctionDetail item={auctions[0]} />} />
-          <Route path="/seller/post-auction" element={<NewAuction />} />
-          <Route path="/seller/current-auctions" element={<CurrentAuctions />} />
-          <Route path="/seller/all-auctions" element={<AllAuctionsForSeller />} />
-          <Route path="/seller/earnings" element={<Earnings/>} />
-          <Route path="/seller/profile" element={<MyProfile />} />
+    <AuthProvider>
+      <Router>
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <div className="d-flex justify-content-center align-items-center vh-100 vw-100 no-scroll-x">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={<LoginPage />} />
+            <Route path="/signup" element={<RegisterPage />} />
 
-          <Route path="/buyer/current-auctions" element={<CurrentBuyerAuctions />} />
-          <Route path="/buyer/all-auctions" element={<AllAuctionsForBuyer/>} />
-          <Route path="/buyer/bidding-history" element={<BiddingHistory/>} />
-          <Route path="/buyer/profile" element={<BuyerProfile />} />
+            {/* Buyer Protected Routes */}
+            <Route
+              path="/buyer"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <DashboardBuyer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/all-auctions"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <AllAuctionsForBuyer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/current-auctions"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <CurrentBuyerAuctions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/bidding-history"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <BiddingHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/profile"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <BuyerProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/auction/:id"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <BuyerAuctionDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/auction/result/:id"
+              element={
+                <ProtectedRoute allowedRole="0">
+                  <BuyerAuctionResult />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="/buyer/auction/:id" element={<BuyerAuctionDetail/>} />
-          <Route path="/seller/auction/:id" element={<SellerAuctionDetail />} />
+            {/* Seller Protected Routes */}
+            <Route
+              path="/seller"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <DashboardSeller />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/post-auction"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <NewAuction />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/current-auctions"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <CurrentAuctions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/all-auctions"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <AllAuctionsForSeller />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/earnings"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <Earnings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/profile"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <MyProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/auction/:id"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <SellerAuctionDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seller/auction/result/:id"
+              element={
+                <ProtectedRoute allowedRole="1">
+                  <SellerAuctionResult />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="/buyer/auction/result/:id" element={<BuyerAuctionResult/>} />
-          <Route path="/seller/auction/result/:id" element={<SellerAuctionResult />} />
-        </Routes>
-      </div>
-    </Router>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 };
 
