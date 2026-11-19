@@ -1,23 +1,16 @@
-// Importing mongoose
 const mongoose = require('mongoose');
+require('dotenv').config();
 
+const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/auctionDB';
 
-// MongoDB connection URL (replace with your own)
-const mongoDB = 'mongodb://localhost:27017/auctionDB';
+mongoose.connect(mongoDB)
+  .then(() => {
+    console.log('Successfully connected to MongoDB!');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
 
-// Connect to MongoDB
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Get the default connection
 const db = mongoose.connection;
-
-
-// Bind connection to error event (to get notification of connection errors)
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-// Bind connection to success event
-db.once('open', () => {
-  console.log('Successfully connected to MongoDB!');
-});
 
 module.exports = db;
