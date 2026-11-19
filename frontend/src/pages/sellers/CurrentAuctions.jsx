@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SellerSidebar from '../../components/SellerSidebar';
 import ApiConnector from '../../components/apiconnector';
+import CardSpotlight from '../../components/ui/CardSpotlight';
+import { Search, Plus, Calendar, Users } from 'lucide-react';
 
 const CurrentAuctions = () => {
   const [auctions, setAuctions] = useState([]);
@@ -39,120 +41,134 @@ const CurrentAuctions = () => {
   });
 
   return (
-    <div className="container-fluid" style={{ height: '100%' }}>
-      <div className="row" style={{ height: '100%' }}>
-        <SellerSidebar />
-        <div
-          className="col-md-10 offset-md-2"
-          style={{ padding: '30px', overflowY: 'auto', height: '100vh', backgroundColor: '#f8fafc' }}
-        >
-          <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="min-h-screen w-full bg-slate-950 flex flex-col md:flex-row">
+      <SellerSidebar />
+
+      <main className="flex-1 min-w-0 w-full min-h-screen px-4 sm:px-6 lg:px-8 pt-20 md:pt-8 pb-8 flex flex-col justify-between">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h2 className="fw-bold text-dark mb-1">My Active Listings</h2>
-              <p className="text-muted mb-0">Track and manage your posted auction inventory</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">
+                My Active Listings
+              </h1>
+              <p className="text-slate-400 text-xs sm:text-sm">
+                Track live offers and monitor your active auctions
+              </p>
             </div>
             <button
-              className="btn btn-success px-4 py-2 fw-semibold"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2 min-h-[44px]"
               onClick={() => navigate('/seller/post-auction')}
             >
-              + Post New Auction
+              <Plus className="w-4 h-4" />
+              <span>Post New Auction</span>
             </button>
           </div>
 
-          <div className="card border-0 shadow-sm rounded-3 p-3 bg-white mb-4">
-            <div className="row g-3">
-              <div className="col-md-8">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="🔍 Search my auctions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="col-md-4">
-                <select
-                  className="form-select"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <option value="Active">Active Listings Only</option>
-                  <option value="Closed">Closed Listings Only</option>
-                  <option value="All">All Listings</option>
-                </select>
-              </div>
+          <div className="p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800 mb-6 flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-emerald-500"
+                placeholder="Search active inventory..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
+            <select
+              className="py-2.5 px-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-sm focus:outline-none focus:border-emerald-500 min-h-[44px]"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="Active">Active Only</option>
+              <option value="Closed">Closed Only</option>
+              <option value="All">All Listings</option>
+            </select>
           </div>
 
           {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status" />
+            <div className="flex justify-center py-20">
+              <div className="spinner-border text-emerald-500" role="status" />
             </div>
           ) : filteredAuctions.length === 0 ? (
-            <div className="card border-0 shadow-sm rounded-3 p-5 text-center bg-white">
-              <p className="text-muted fs-5 mb-3">No auction listings found matching your filter.</p>
-              <div>
-                <button
-                  className="btn btn-success"
-                  onClick={() => navigate('/seller/post-auction')}
-                >
-                  Create Your First Listing &rarr;
-                </button>
-              </div>
+            <div className="p-8 sm:p-12 rounded-2xl bg-slate-900/40 border border-slate-800 text-center">
+              <p className="text-slate-400 text-sm sm:text-base mb-4">No auction listings found matching your filters.</p>
+              <button
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm min-h-[44px]"
+                onClick={() => navigate('/seller/post-auction')}
+              >
+                Create Listing Now
+              </button>
             </div>
           ) : (
-            <div className="row g-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {filteredAuctions.map((item) => (
-                <div className="col-md-6" key={item._id}>
-                  <div className="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                    <div className="card-header bg-dark text-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                      <span className="text-truncate">{item.itemName}</span>
-                      <span className={`badge ${item.isClosed ? 'bg-secondary' : 'bg-success'}`}>
+                <CardSpotlight
+                  key={item._id}
+                  color="#10b981"
+                  className="flex flex-col justify-between hover:border-emerald-500/40 cursor-pointer bg-slate-900/60 p-4 sm:p-5"
+                  onClick={() => navigate(`/seller/auction/${item._id}`)}
+                >
+                  <div>
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <h3 className="font-bold text-white text-base sm:text-lg truncate mb-0">{item.itemName}</h3>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold shrink-0 ${item.isClosed ? 'bg-slate-800 text-slate-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
                         {item.isClosed ? 'Closed' : 'Active'}
                       </span>
                     </div>
-                    <div className="card-body d-flex flex-column justify-content-between">
-                      <div>
-                        <p className="text-muted small mb-3">{item.description}</p>
-                        <div className="bg-light p-3 rounded mb-3">
-                          <span className="small text-muted d-block">Current Top Bid</span>
-                          <span className="fs-4 fw-bold text-success">
-                            ${Number(item.currentBid || 0).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="small text-muted mb-1">
-                          <strong>Total Bidders:</strong> {item.bidders?.length || 0}
-                        </div>
-                        <div className="small text-muted mb-1">
-                          <strong>Closing Time:</strong>{' '}
-                          {item.closingTime ? new Date(item.closingTime).toLocaleString() : 'N/A'}
-                        </div>
-                      </div>
+                    <p className="text-slate-400 text-xs line-clamp-2 mb-4 leading-relaxed">{item.description}</p>
 
-                      <div className="mt-3 d-flex gap-2">
-                        <button
-                          className="btn btn-primary flex-fill"
-                          onClick={() => navigate(`/seller/auction/${item._id}`)}
-                        >
-                          View Details & Bids
-                        </button>
-                        {item.isClosed && (
-                          <button
-                            className="btn btn-outline-secondary"
-                            onClick={() => navigate(`/seller/auction/result/${item._id}`)}
-                          >
-                            Result
-                          </button>
-                        )}
+                    <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 mb-4">
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Top Bid</div>
+                      <div className="text-xl sm:text-2xl font-black text-emerald-400">
+                        ${Number(item.currentBid || 0).toLocaleString()}
                       </div>
                     </div>
                   </div>
-                </div>
+
+                  <div>
+                    <div className="flex justify-between items-center text-xs text-slate-400 mb-3 pt-2 border-t border-slate-800/60">
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5" />
+                        <strong className="text-slate-200">{item.bidders?.length || 0}</strong> bidders
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <strong className="text-slate-200">
+                          {item.closingTime ? new Date(item.closingTime).toLocaleDateString() : 'N/A'}
+                        </strong>
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs sm:text-sm transition min-h-[44px]"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/seller/auction/${item._id}`);
+                        }}
+                      >
+                        Details & Bids
+                      </button>
+                      {item.isClosed && (
+                        <button
+                          className="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition min-h-[44px]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/seller/auction/result/${item._id}`);
+                          }}
+                        >
+                          Result
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </CardSpotlight>
               ))}
             </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 };

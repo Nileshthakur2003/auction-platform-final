@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BuyerSidebar from '../../components/BuyerSidebar';
 import ApiConnector from '../../components/apiconnector';
+import CardSpotlight from '../../components/ui/CardSpotlight';
+import { Search, Calendar, ArrowRight } from 'lucide-react';
 
 const CurrentBuyerAuctions = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,92 +31,105 @@ const CurrentBuyerAuctions = () => {
   );
 
   return (
-    <div className="container-fluid" style={{ height: '100%' }}>
-      <div className="row" style={{ height: '100%' }}>
-        <BuyerSidebar />
-        <div
-          className="col-md-10 offset-md-2"
-          style={{ padding: '30px', overflowY: 'auto', height: '100vh', backgroundColor: '#f8fafc' }}
-        >
-          <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="min-h-screen w-full bg-slate-950 flex flex-col md:flex-row">
+      <BuyerSidebar />
+
+      <main className="flex-1 min-w-0 w-full min-h-screen px-4 sm:px-6 lg:px-8 pt-20 md:pt-8 pb-8 flex flex-col justify-between">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h2 className="fw-bold text-dark mb-1">My Active Auctions</h2>
-              <p className="text-muted mb-0">Auctions where you have placed bids that are currently ongoing</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">
+                My Active Bids
+              </h1>
+              <p className="text-slate-400 text-xs sm:text-sm">
+                Ongoing auctions where you have placed verified bids
+              </p>
             </div>
             <button
-              className="btn btn-primary"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm transition min-h-[44px]"
               onClick={() => navigate('/buyer/all-auctions')}
             >
               Browse All Listings
             </button>
           </div>
 
-          <div className="card border-0 shadow-sm rounded-3 p-3 bg-white mb-4">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="🔍 Search in your active auctions..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800 mb-6">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-blue-500"
+                placeholder="Search active bids..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status" />
+            <div className="flex justify-center py-20">
+              <div className="spinner-border text-blue-500" role="status" />
             </div>
           ) : filteredAuctions.length === 0 ? (
-            <div className="card border-0 shadow-sm rounded-3 p-5 text-center bg-white">
-              <p className="text-muted fs-5 mb-3">You haven't placed bids on any currently active auctions.</p>
-              <div>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => navigate('/buyer/all-auctions')}
-                >
-                  Explore Live Auctions &rarr;
-                </button>
-              </div>
+            <div className="p-8 sm:p-12 rounded-2xl bg-slate-900/40 border border-slate-800 text-center">
+              <p className="text-slate-400 text-sm sm:text-base mb-4">
+                You do not have any active bids on ongoing auctions.
+              </p>
+              <button
+                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm min-h-[44px]"
+                onClick={() => navigate('/buyer/all-auctions')}
+              >
+                Find Items to Bid On &rarr;
+              </button>
             </div>
           ) : (
-            <div className="row g-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {filteredAuctions.map((item) => (
-                <div className="col-md-6" key={item._id}>
-                  <div className="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                    <div className="card-header bg-dark text-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                      <span className="text-truncate">{item.itemName}</span>
-                      <span className="badge bg-success">Live Bidding</span>
+                <CardSpotlight
+                  key={item._id}
+                  className="flex flex-col justify-between hover:border-blue-500/40 cursor-pointer bg-slate-900/60 p-4 sm:p-5"
+                  onClick={() => navigate(`/buyer/auction/${item._id}`)}
+                >
+                  <div>
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <h3 className="font-bold text-white text-base sm:text-lg truncate mb-0">{item.itemName}</h3>
+                      <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-semibold shrink-0">
+                        In Progress
+                      </span>
                     </div>
-                    <div className="card-body d-flex flex-column justify-content-between">
-                      <div>
-                        <p className="text-muted small mb-3">{item.description}</p>
-                        <div className="bg-light p-3 rounded mb-3">
-                          <span className="small text-muted d-block">Current Top Bid</span>
-                          <span className="fs-4 fw-bold text-primary">
-                            ${Number(item.currentBid || 0).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="small text-muted mb-1">
-                          <strong>Closes:</strong>{' '}
-                          {item.closingTime ? new Date(item.closingTime).toLocaleString() : 'N/A'}
-                        </div>
-                      </div>
+                    <p className="text-slate-400 text-xs line-clamp-2 mb-4 leading-relaxed">{item.description}</p>
 
-                      <div className="mt-3">
-                        <button
-                          className="btn btn-primary w-100 fw-semibold"
-                          onClick={() => navigate(`/buyer/auction/${item._id}`)}
-                        >
-                          View & Increase Bid &rarr;
-                        </button>
+                    <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 mb-4">
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Current Top Bid</div>
+                      <div className="text-xl sm:text-2xl font-black text-blue-400">
+                        ${Number(item.currentBid || 0).toLocaleString()}
                       </div>
                     </div>
                   </div>
-                </div>
+
+                  <div>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3 pt-2 border-t border-slate-800/60">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>Closes: <strong className="text-slate-200">{item.closingTime ? new Date(item.closingTime).toLocaleDateString() : 'N/A'}</strong></span>
+                    </div>
+
+                    <button
+                      className="w-full py-2.5 sm:py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2 min-h-[44px]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/buyer/auction/${item._id}`);
+                      }}
+                    >
+                      <span>Increase Bid</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </CardSpotlight>
               ))}
             </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 };

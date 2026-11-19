@@ -28,7 +28,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-        <div className="d-flex justify-content-center align-items-center vh-100 vw-100 no-scroll-x">
+        <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />

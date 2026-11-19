@@ -5,6 +5,7 @@ import { z } from 'zod';
 import moment from 'moment-timezone';
 import SellerSidebar from '../../components/SellerSidebar';
 import ApiConnector from '../../components/apiconnector';
+import { ArrowLeft, PlusCircle } from 'lucide-react';
 
 const PostAuction = () => {
   const [itemName, setItemName] = useState('');
@@ -15,7 +16,6 @@ const PostAuction = () => {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  // FIX: Properly initialize useNavigate
   const navigate = useNavigate();
 
   const auctionSchema = z
@@ -55,12 +55,6 @@ const PostAuction = () => {
       const response = await ApiConnector.post('/auction', newItem);
       if (response.status === 201) {
         toast.success('Auction posted successfully!');
-        setItemName('');
-        setDescription('');
-        setStartingBid('');
-        setOpeningTime('');
-        setClosingTime('');
-        setErrors({});
         navigate('/seller/current-auctions');
       }
     } catch (error) {
@@ -73,120 +67,124 @@ const PostAuction = () => {
   };
 
   return (
-    <div className="container-fluid" style={{ height: '100%' }}>
-      <div className="row" style={{ height: '100%' }}>
-        <SellerSidebar />
-        <div
-          className="col-md-10 offset-md-2"
-          style={{ padding: '30px', overflowY: 'auto', height: '100vh', backgroundColor: '#f8fafc' }}
-        >
-          <div className="mx-auto" style={{ maxWidth: '750px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="min-h-screen w-full bg-slate-950 flex flex-col md:flex-row">
+      <SellerSidebar />
+
+      <main className="flex-1 min-w-0 w-full min-h-screen px-4 sm:px-6 lg:px-8 pt-20 md:pt-8 pb-8 flex flex-col justify-between">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <button
+              className="inline-flex items-center gap-2 text-xs sm:text-sm text-slate-400 hover:text-white transition py-2 cursor-pointer"
+              onClick={() => navigate('/seller')}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Dashboard</span>
+            </button>
+          </div>
+
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">
+              Post New Auction
+            </h1>
+            <p className="text-slate-400 text-xs sm:text-sm">
+              List a new item for live competitive bidding
+            </p>
+          </div>
+
+          <div className="p-5 sm:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <h2 className="fw-bold text-dark mb-1">Post New Auction</h2>
-                <p className="text-muted mb-0">Fill in the details below to list a new item</p>
+                <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+                  Auction Title
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm sm:text-base placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition min-h-[44px]"
+                  placeholder="e.g. Vintage 1970s Chronograph Watch"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                  required
+                />
+                {errors.itemName && <p className="text-xs text-rose-400 mt-1">{errors.itemName}</p>}
               </div>
-              <button
-                className="btn btn-outline-secondary"
-                onClick={() => navigate('/seller')}
-              >
-                &larr; Back to Dashboard
-              </button>
-            </div>
 
-            <div className="card border-0 shadow-sm rounded-3 p-4 bg-white">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label className="form-label fw-semibold text-dark">Auction Title</label>
-                  <input
-                    type="text"
-                    className={`form-control ${errors.itemName ? 'is-invalid' : ''}`}
-                    placeholder="e.g. Vintage 1970s Chronograph Watch"
-                    value={itemName}
-                    onChange={(e) => setItemName(e.target.value)}
-                    required
-                  />
-                  {errors.itemName && <div className="invalid-feedback">{errors.itemName}</div>}
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold text-dark">Starting Bid ($ USD)</label>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+                  Starting Bid ($ USD)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
                   <input
                     type="number"
                     step="0.01"
                     min="1"
-                    className={`form-control ${errors.startingBid ? 'is-invalid' : ''}`}
-                    placeholder="e.g. 150.00"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm sm:text-base font-bold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition min-h-[44px]"
+                    placeholder="150.00"
                     value={startingBid}
                     onChange={(e) => setStartingBid(e.target.value)}
                     required
                   />
-                  {errors.startingBid && <div className="invalid-feedback">{errors.startingBid}</div>}
                 </div>
+                {errors.startingBid && <p className="text-xs text-rose-400 mt-1">{errors.startingBid}</p>}
+              </div>
 
-                <div className="row g-3 mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold text-dark">Start Date & Time</label>
-                    <input
-                      type="datetime-local"
-                      className={`form-control ${errors.openingTime ? 'is-invalid' : ''}`}
-                      value={openingTime}
-                      onChange={(e) => setOpeningTime(e.target.value)}
-                      required
-                    />
-                    {errors.openingTime && (
-                      <div className="invalid-feedback">{errors.openingTime}</div>
-                    )}
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold text-dark">End Date & Time</label>
-                    <input
-                      type="datetime-local"
-                      className={`form-control ${errors.closingTime ? 'is-invalid' : ''}`}
-                      value={closingTime}
-                      onChange={(e) => setClosingTime(e.target.value)}
-                      required
-                    />
-                    {errors.closingTime && (
-                      <div className="invalid-feedback">{errors.closingTime}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="form-label fw-semibold text-dark">Item Description</label>
-                  <textarea
-                    className={`form-control ${errors.description ? 'is-invalid' : ''}`}
-                    rows="4"
-                    placeholder="Provide details about condition, authenticity, shipping, and history..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+              {/* Mobile stacked, desktop side-by-side */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+                    Start Date & Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-emerald-500 min-h-[44px]"
+                    value={openingTime}
+                    onChange={(e) => setOpeningTime(e.target.value)}
                     required
                   />
-                  {errors.description && (
-                    <div className="invalid-feedback">{errors.description}</div>
-                  )}
+                  {errors.openingTime && <p className="text-xs text-rose-400 mt-1">{errors.openingTime}</p>}
                 </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+                    End Date & Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-emerald-500 min-h-[44px]"
+                    value={closingTime}
+                    onChange={(e) => setClosingTime(e.target.value)}
+                    required
+                  />
+                  {errors.closingTime && <p className="text-xs text-rose-400 mt-1">{errors.closingTime}</p>}
+                </div>
+              </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-success w-100 py-2 fw-semibold fs-5 shadow-sm"
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <span>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" />
-                      Creating Auction...
-                    </span>
-                  ) : (
-                    'Publish Auction Listing'
-                  )}
-                </button>
-              </form>
-            </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+                  Item Description
+                </label>
+                <textarea
+                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm sm:text-base placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                  rows="4"
+                  placeholder="Provide condition, provenance, authenticity, and shipping details..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+                {errors.description && <p className="text-xs text-rose-400 mt-1">{errors.description}</p>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-base transition shadow-lg shadow-emerald-500/20 disabled:opacity-50 cursor-pointer min-h-[48px] flex items-center justify-center gap-2"
+              >
+                <PlusCircle className="w-5 h-5" />
+                <span>{submitting ? 'Publishing Listing...' : 'Publish Auction Listing'}</span>
+              </button>
+            </form>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

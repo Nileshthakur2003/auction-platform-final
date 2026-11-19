@@ -98,9 +98,9 @@ app.use('/', authRoutes);
 app.use('/', auctionRoutes);
 app.use('/', bidRoutes);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/auctions', auctionRoutes);
-app.use('/api/bids', bidRoutes);
+app.use('/api', authRoutes);
+app.use('/api', auctionRoutes);
+app.use('/api', bidRoutes);
 
 // Local Cron Job: Runs when NOT in Vercel serverless mode
 if (!process.env.VERCEL) {
