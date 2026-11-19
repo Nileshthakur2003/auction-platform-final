@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ApiConnector from '../components/apiconnector';
 import BuyerSidebar from '../components/BuyerSidebar';
+import CardSpotlight from '../components/ui/CardSpotlight';
 import socket from '../socket';
+import { Radio, Gavel, DollarSign, ArrowUpRight, Flame } from 'lucide-react';
 
 const DashboardBuyer = () => {
   const [activeAuctions, setActiveAuctions] = useState([]);
@@ -33,7 +35,6 @@ const DashboardBuyer = () => {
   useEffect(() => {
     fetchDashboardData();
 
-    // Listen for live auction updates via WebSockets
     socket.on('auction_feed_update', () => {
       fetchDashboardData();
     });
@@ -54,126 +55,130 @@ const DashboardBuyer = () => {
         <BuyerSidebar />
         <div
           className="col-md-10 offset-md-2"
-          style={{ padding: '30px', overflowY: 'auto', height: '100vh', backgroundColor: '#f8fafc' }}
+          style={{ padding: '36px', overflowY: 'auto', height: '100vh', backgroundColor: '#030712' }}
         >
-          <div className="d-flex justify-content-between align-items-center mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-              <h2 className="fw-bold text-dark mb-1">Buyer Dashboard</h2>
-              <p className="text-muted mb-0">Overview of live auctions and your bidding activity</p>
+              <h2 className="text-3xl font-extrabold text-white tracking-tight mb-1">Buyer Dashboard</h2>
+              <p className="text-slate-400 text-sm">Real-time pulse of available auctions and your bidding activity</p>
             </div>
             <button
-              className="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/20 transition flex items-center gap-2 cursor-pointer"
               onClick={() => navigate('/buyer/all-auctions')}
             >
-              Explore All Auctions &rarr;
+              <span>Explore All Auctions</span>
+              <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Metric Cards */}
-          <div className="row g-3 mb-4">
-            <div className="col-md-4">
-              <div className="card border-0 shadow-sm rounded-3 p-3 bg-primary text-white">
-                <div className="card-body">
-                  <div className="text-uppercase small fw-bold opacity-75">Live Auctions Available</div>
-                  <h3 className="display-6 fw-bold mt-2 mb-0">
-                    {loading ? '...' : activeAuctions.length}
-                  </h3>
+          {/* Aceternity CardSpotlight Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <CardSpotlight color="#3b82f6" className="bg-slate-900/60 border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-semibold tracking-wider uppercase text-blue-400">Live Auctions</span>
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+                  <Flame className="w-5 h-5" />
                 </div>
               </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card border-0 shadow-sm rounded-3 p-3 bg-success text-white">
-                <div className="card-body">
-                  <div className="text-uppercase small fw-bold opacity-75">Total Bids Placed</div>
-                  <h3 className="display-6 fw-bold mt-2 mb-0">
-                    {loading ? '...' : totalBids}
-                  </h3>
+              <div className="text-3xl font-extrabold text-white">
+                {loading ? '...' : activeAuctions.length}
+              </div>
+              <div className="text-xs text-slate-500 mt-1">Available for immediate bidding</div>
+            </CardSpotlight>
+
+            <CardSpotlight color="#10b981" className="bg-slate-900/60 border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-semibold tracking-wider uppercase text-emerald-400">Total Bids</span>
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                  <Gavel className="w-5 h-5" />
                 </div>
               </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card border-0 shadow-sm rounded-3 p-3 bg-info text-white">
-                <div className="card-body">
-                  <div className="text-uppercase small fw-bold opacity-75">Total Won & Spent</div>
-                  <h3 className="display-6 fw-bold mt-2 mb-0">
-                    {loading ? '...' : `$${Number(totalSpent).toLocaleString()}`}
-                  </h3>
+              <div className="text-3xl font-extrabold text-white">
+                {loading ? '...' : totalBids}
+              </div>
+              <div className="text-xs text-slate-500 mt-1">Total offers placed by you</div>
+            </CardSpotlight>
+
+            <CardSpotlight color="#8b5cf6" className="bg-slate-900/60 border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-semibold tracking-wider uppercase text-purple-400">Won & Settled</span>
+                <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+                  <DollarSign className="w-5 h-5" />
                 </div>
               </div>
-            </div>
+              <div className="text-3xl font-extrabold text-white">
+                {loading ? '...' : `$${Number(totalSpent).toLocaleString()}`}
+              </div>
+              <div className="text-xs text-slate-500 mt-1">Total invested on winning bids</div>
+            </CardSpotlight>
           </div>
 
-          {/* Active Auctions Grid */}
-          <div className="mb-4">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h4 className="fw-bold text-dark mb-0">Live Auctions</h4>
-              <span className="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
-                ● Live Updates Active
-              </span>
+          {/* Active Auctions Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-xl font-bold text-white mb-0">Active Live Listings</h4>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Socket.io Synchronized</span>
+              </div>
             </div>
 
             {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status" />
+              <div className="flex justify-center py-16">
+                <div className="spinner-border text-blue-500" role="status" />
               </div>
             ) : activeAuctions.length === 0 ? (
-              <div className="card border-0 shadow-sm text-center py-5 rounded-3">
-                <div className="card-body">
-                  <p className="text-muted fs-5 mb-3">No active auctions at the moment.</p>
-                  <button className="btn btn-outline-primary" onClick={() => navigate('/buyer/all-auctions')}>
-                    Browse All Listings
-                  </button>
-                </div>
+              <div className="p-10 rounded-2xl border border-slate-800 bg-slate-900/40 text-center">
+                <p className="text-slate-400 text-base mb-4">No active auctions at the moment.</p>
+                <button
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium"
+                  onClick={() => navigate('/buyer/all-auctions')}
+                >
+                  Browse Catalog
+                </button>
               </div>
             ) : (
-              <div className="row g-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {activeAuctions.map((auction) => (
-                  <div className="col-md-4" key={auction._id}>
-                    <div
-                      className="card h-100 border-0 shadow-sm rounded-3 hover-shadow"
-                      style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
-                      onClick={() => navigate(`/buyer/auction/${auction._id}`)}
-                    >
-                      <div className="card-header bg-dark text-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                        <span className="text-truncate" style={{ maxWidth: '70%' }}>
-                          {auction.itemName}
+                  <CardSpotlight
+                    key={auction._id}
+                    className="flex flex-col justify-between hover:border-blue-500/40 cursor-pointer bg-slate-900/60"
+                    onClick={() => navigate(`/buyer/auction/${auction._id}`)}
+                  >
+                    <div>
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <h5 className="font-bold text-white text-lg truncate mb-0">{auction.itemName}</h5>
+                        <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-semibold">
+                          Live
                         </span>
-                        <span className="badge bg-primary fs-7">Live</span>
                       </div>
-                      <div className="card-body d-flex flex-column justify-content-between">
-                        <div>
-                          <p className="text-muted small text-truncate-2 mb-3">
-                            {auction.description}
-                          </p>
-                          <div className="bg-light p-2 rounded mb-3">
-                            <span className="small text-muted d-block">Current Bid</span>
-                            <span className="fs-4 fw-bold text-primary">
-                              ${Number(auction.currentBid || 0).toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
+                      <p className="text-slate-400 text-xs line-clamp-2 mb-4">{auction.description}</p>
 
-                        <div>
-                          <div className="small text-muted mb-1">
-                            <strong>Bidders:</strong> {auction.bidders?.length || 0}
-                          </div>
-                          <div className="small text-muted mb-3">
-                            <strong>Closes:</strong>{' '}
-                            {auction.closingTime ? new Date(auction.closingTime).toLocaleString() : 'N/A'}
-                          </div>
-                          <button
-                            className="btn btn-outline-primary w-100 fw-semibold"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/buyer/auction/${auction._id}`);
-                            }}
-                          >
-                            Place Bid Now
-                          </button>
+                      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 mb-4">
+                        <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-0.5">Current Top Bid</div>
+                        <div className="text-2xl font-black text-blue-400">
+                          ${Number(auction.currentBid || 0).toLocaleString()}
                         </div>
                       </div>
                     </div>
-                  </div>
+
+                    <div>
+                      <div className="flex justify-between items-center text-xs text-slate-400 mb-3">
+                        <span>Bidders: <strong className="text-slate-200">{auction.bidders?.length || 0}</strong></span>
+                        <span>Closes: <strong className="text-slate-200">{auction.closingTime ? new Date(auction.closingTime).toLocaleDateString() : 'N/A'}</strong></span>
+                      </div>
+
+                      <button
+                        className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition shadow-sm cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/buyer/auction/${auction._id}`);
+                        }}
+                      >
+                        Place Bid Now
+                      </button>
+                    </div>
+                  </CardSpotlight>
                 ))}
               </div>
             )}

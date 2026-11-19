@@ -1,15 +1,54 @@
-# Auction Platform
+# Online Auction Platform - Frontend Client
 
-- The auction platform frontend is a React-based web application designed to provide users with a seamless and interactive experience.
-  - The platform enables buyers and sellers to participate in online auctions, view auction details, and manage their accounts.
-  - With a user-friendly interface and responsive design, the platform ensures that users can easily navigate through the various sections and access the features they need.
+Modern, responsive React web client for the Online Auction Platform, built with **React 19**, **Vite**, **Socket.io Client**, and **Bootstrap 5**.
 
-- The application is structured into well-organized components and pages, making it easy to maintain and extend.
-  - Key components include the navigation bar, buyer and seller dashboards, sidebars, and various content sections.
-  - Each component is designed to handle specific functionalities, such as displaying active listings, past sales, and messages.
-  - The pages directory contains the main pages of the application, including the landing page, login page, registration page, and auction-related pages.
+---
 
-- To enhance the overall user experience, the platform incorporates modern design principles and styles.
-  - The styles directory houses the CSS files that define the look and feel of the application, ensuring a consistent and visually appealing interface.
-  - With a focus on performance and usability, the auction platform frontend aims to provide a smooth and enjoyable experience for all users.
-  - Users can post new auctions, bid on items, or simply browse through available listings.
+## 🚀 Features
+
+- **Live Real-Time Bidding**: Powered by **Socket.io** client. Automatically synchronizes incoming bids, leading bidder status, and price changes without page reload.
+- **Buyer & Seller Portals**: Dedicated sidebars, dashboards, and role-guarded routes (`ProtectedRoute`).
+- **Interactive Bidding Console**: Instant + \$10 / + \$50 / + \$100 increments and countdown clocks.
+- **Bidding History & Won Tracking**: Live badges for Won, Currently Leading, Outbid, and Lost statuses.
+- **Toast Notifications**: Modern toast alerts via `react-hot-toast` replacing intrusive native alerts.
+- **Centralized Session Context**: Clean `AuthContext` managing authentication tokens and session lifecycles.
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework**: React 19 + Vite
+- **Routing**: React Router DOM v7
+- **Real-Time**: Socket.io Client
+- **UI Components**: React Bootstrap, Bootstrap 5, Emotion, Material-UI
+- **Validation**: Zod
+- **Notifications**: React Hot Toast
+- **HTTP Client**: Axios with JWT Interceptors
+
+---
+
+## ⚙️ Setup & Installation
+
+1. Install packages:
+   ```bash
+   npm install
+   ```
+
+2. Configure environment:
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env`:
+   ```env
+   VITE_API_URL=http://localhost:5001
+   ```
+
+3. Run in development:
+   ```bash
+   npm run dev
+   ```
+
+4. Build for production:
+   ```bash
+   npm run build
+   ```
