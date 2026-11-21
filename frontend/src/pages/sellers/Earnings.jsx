@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import SellerSidebar from '../../components/SellerSidebar';
 import ApiConnector from '../../components/apiconnector';
 import CardSpotlight from '../../components/ui/CardSpotlight';
+import LegalDocumentModal from '../../components/LegalDocumentModal';
 import moment from 'moment';
-import { DollarSign, Package, Users } from 'lucide-react';
+import { useCurrency } from '../../context/CurrencyContext';
+import { DollarSign, Package, Users, FileText } from 'lucide-react';
 
 const Earnings = () => {
+  const { format } = useCurrency();
   const [earningsData, setEarningsData] = useState([]);
+  const [selectedDocAuction, setSelectedDocAuction] = useState(null);
   const [stats, setStats] = useState({
     auctionedItems: 0,
     bidsReceived: 0,
@@ -66,7 +70,7 @@ const Earnings = () => {
                 </div>
               </div>
               <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
-                ${safeTotal.toLocaleString()}
+                {format(safeTotal)}
               </div>
               <div className="text-xs text-slate-500 mt-1">From concluded winning sales</div>
             </CardSpotlight>
@@ -107,7 +111,7 @@ const Earnings = () => {
 
             {loading ? (
               <div className="flex justify-center py-16">
-                <div className="spinner-border text-emerald-500" role="status" />
+                <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
               </div>
             ) : earningsData.length === 0 ? (
               <div className="text-center py-12 text-slate-500 text-xs sm:text-sm">
@@ -122,11 +126,27 @@ const Earnings = () => {
                       <div className="flex justify-between items-start gap-2 mb-2">
                         <span className="font-bold text-white text-sm line-clamp-1">{item.itemName}</span>
                         <span className="text-emerald-400 font-extrabold text-base">
-                          ${Number(item.finalBid || 0).toLocaleString()}
+                          {format(item.finalBid || 0)}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 flex justify-between pt-2 border-t border-slate-800/60">
+                      <div className="text-[11px] text-slate-400 flex justify-between items-center pt-2 border-t border-slate-800/60">
                         <span>Settled: {formatDate(item.closingTime)}</span>
+                        <button
+                          className="px-2.5 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-semibold flex items-center gap-1 cursor-pointer transition"
+                          onClick={() =>
+                            setSelectedDocAuction({
+                              itemName: item.itemName,
+                              currentBid: item.finalBid,
+                              auctionId: item.auctionId || `ITEM-${index}`,
+                              closingTime: item.closingTime,
+                              openingTime: item.openingTime,
+                              highestBidder: 'Verified Winning Buyer',
+                            })
+                          }
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Legal Deed</span>
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -141,6 +161,7 @@ const Earnings = () => {
                         <th className="py-3 px-4">Final Sold Price</th>
                         <th className="py-3 px-4">Opening Date</th>
                         <th className="py-3 px-4">Settled Date</th>
+                        <th className="py-3 px-4 text-right">Legal Document</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
@@ -148,10 +169,28 @@ const Earnings = () => {
                         <tr key={index} className="hover:bg-slate-900/80 transition">
                           <td className="py-3.5 px-4 font-semibold text-white">{item.itemName}</td>
                           <td className="py-3.5 px-4 font-bold text-emerald-400 text-base">
-                            ${Number(item.finalBid || 0).toLocaleString()}
+                            {format(item.finalBid || 0)}
                           </td>
                           <td className="py-3.5 px-4 text-xs text-slate-400">{formatDate(item.openingTime)}</td>
                           <td className="py-3.5 px-4 text-xs text-slate-400">{formatDate(item.closingTime)}</td>
+                          <td className="py-3.5 px-4 text-right">
+                            <button
+                              className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer"
+                              onClick={() =>
+                                setSelectedDocAuction({
+                                  itemName: item.itemName,
+                                  currentBid: item.finalBid,
+                                  auctionId: item.auctionId || `ITEM-${index}`,
+                                  closingTime: item.closingTime,
+                                  openingTime: item.openingTime,
+                                  highestBidder: 'Verified Winning Buyer',
+                                })
+                              }
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                              <span>Deed & Tax Invoice</span>
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -161,6 +200,13 @@ const Earnings = () => {
             )}
           </div>
         </div>
+
+        <LegalDocumentModal
+          isOpen={!!selectedDocAuction}
+          onClose={() => setSelectedDocAuction(null)}
+          auction={selectedDocAuction}
+          role="seller"
+        />
       </main>
     </div>
   );

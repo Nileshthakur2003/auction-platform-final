@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BuyerSidebar from '../../components/BuyerSidebar';
 import ApiConnector from '../../components/apiconnector';
-import { Search, Trophy, Flame, AlertTriangle, XCircle, ArrowUpRight } from 'lucide-react';
+import LegalDocumentModal from '../../components/LegalDocumentModal';
+import { useCurrency } from '../../context/CurrencyContext';
+import { Search, Trophy, Flame, AlertTriangle, XCircle, ArrowUpRight, FileText } from 'lucide-react';
 
 const BiddingHistory = () => {
+  const { format } = useCurrency();
   const [biddingHistoryData, setBiddingHistoryData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [selectedDocAuction, setSelectedDocAuction] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -151,18 +155,37 @@ const BiddingHistory = () => {
                       <div>
                         <span className="text-[10px] text-slate-500 block uppercase">My Bid</span>
                         <span className="text-lg font-black text-blue-400">
-                          ${Number(item.bidAmount).toLocaleString()}
+                          {format(item.bidAmount)}
                         </span>
                       </div>
-                      {item.auctionId && (
-                        <button
-                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1"
-                          onClick={() => navigate(`/buyer/auction/${item.auctionId}`)}
-                        >
-                          <span>Item</span>
-                          <ArrowUpRight className="w-3.5 h-3.5" />
-                        </button>
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        {item.status === 'won' && (
+                          <button
+                            className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                            onClick={() =>
+                              setSelectedDocAuction({
+                                itemName: item.auctionName,
+                                currentBid: item.bidAmount,
+                                auctionId: item.auctionId,
+                                closingTime: item.createdAt,
+                                highestBidder: 'You (Winning Purchaser)',
+                              })
+                            }
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>Legal Deed</span>
+                          </button>
+                        )}
+                        {item.auctionId && (
+                          <button
+                            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1"
+                            onClick={() => navigate(`/buyer/auction/${item.auctionId}`)}
+                          >
+                            <span>Item</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -186,21 +209,40 @@ const BiddingHistory = () => {
                         <tr key={item.bidId || index} className="hover:bg-slate-900/80 transition">
                           <td className="py-3.5 px-5 font-semibold text-white">{item.auctionName}</td>
                           <td className="py-3.5 px-5 font-bold text-blue-400">
-                            ${Number(item.bidAmount).toLocaleString()}
+                            {format(item.bidAmount)}
                           </td>
                           <td className="py-3.5 px-5 text-xs text-slate-400">
                             {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A'}
                           </td>
                           <td className="py-3.5 px-5">{getStatusBadge(item.status)}</td>
                           <td className="py-3.5 px-5 text-right">
-                            {item.auctionId && (
-                              <button
-                                className="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white text-xs font-semibold transition"
-                                onClick={() => navigate(`/buyer/auction/${item.auctionId}`)}
-                              >
-                                View Item
-                              </button>
-                            )}
+                            <div className="flex items-center justify-end gap-2">
+                              {item.status === 'won' && (
+                                <button
+                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
+                                  onClick={() =>
+                                    setSelectedDocAuction({
+                                      itemName: item.auctionName,
+                                      currentBid: item.bidAmount,
+                                      auctionId: item.auctionId,
+                                      closingTime: item.createdAt,
+                                      highestBidder: 'You (Winning Purchaser)',
+                                    })
+                                  }
+                                >
+                                  <FileText className="w-3.5 h-3.5" />
+                                  <span>Legal Deed</span>
+                                </button>
+                              )}
+                              {item.auctionId && (
+                                <button
+                                  className="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white text-xs font-semibold transition cursor-pointer"
+                                  onClick={() => navigate(`/buyer/auction/${item.auctionId}`)}
+                                >
+                                  View Item
+                                </button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -211,6 +253,13 @@ const BiddingHistory = () => {
             </>
           )}
         </div>
+
+        <LegalDocumentModal
+          isOpen={!!selectedDocAuction}
+          onClose={() => setSelectedDocAuction(null)}
+          auction={selectedDocAuction}
+          role="buyer"
+        />
       </main>
     </div>
   );

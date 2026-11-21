@@ -12,13 +12,18 @@ import {
   Gavel,
   Menu,
   X,
+  Scale,
+  Award,
 } from 'lucide-react';
+import CurrencySelector from './CurrencySelector';
+import AuthorizedIdCardModal from './AuthorizedIdCardModal';
 
 const SellerSidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showIdModal, setShowIdModal] = useState(false);
 
   const navItems = [
     { label: 'Dashboard', path: '/seller', icon: LayoutDashboard },
@@ -27,6 +32,7 @@ const SellerSidebar = () => {
     { label: 'All My Auctions', path: '/seller/all-auctions', icon: Package },
     { label: 'Earnings & Sales', path: '/seller/earnings', icon: DollarSign },
     { label: 'Seller Profile', path: '/seller/profile', icon: User },
+    { label: 'Terms & Legal', path: '/terms', icon: Scale },
   ];
 
   const handleNavClick = (path) => {
@@ -91,6 +97,14 @@ const SellerSidebar = () => {
               <div className="text-[11px] text-slate-400 mb-0.5">Signed in as</div>
               <div className="font-bold text-sm text-slate-200 truncate">{user.username}</div>
               <div className="text-xs text-slate-500 truncate">{user.email}</div>
+              <button
+                type="button"
+                onClick={() => setShowIdModal(true)}
+                className="mt-2.5 w-full py-1.5 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 border border-emerald-500/20 transition cursor-pointer"
+              >
+                <Award className="w-3.5 h-3.5" />
+                <span>My Consignor License Card</span>
+              </button>
             </div>
           )}
 
@@ -118,8 +132,13 @@ const SellerSidebar = () => {
           </nav>
         </div>
 
-        {/* Sign Out Button */}
-        <div className="pt-4 border-t border-slate-800/80 shrink-0">
+        {/* Currency & Sign Out Section */}
+        <div className="pt-4 border-t border-slate-800/80 shrink-0 space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] text-slate-400 font-semibold">Currency:</span>
+            <CurrencySelector compact />
+          </div>
+
           <button
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition cursor-pointer min-h-[44px]"
             onClick={logout}
@@ -129,6 +148,13 @@ const SellerSidebar = () => {
           </button>
         </div>
       </aside>
+
+      <AuthorizedIdCardModal
+        isOpen={showIdModal}
+        onClose={() => setShowIdModal(false)}
+        user={user}
+        role="seller"
+      />
     </>
   );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import LandingPage from './pages/LandingPage';
@@ -22,18 +23,21 @@ import SellerAuctionDetail from './pages/sellers/AuctionDetailForSellers';
 import BuyerAuctionDetail from './pages/buyers/AuctionDetailsForBuyers';
 import BuyerAuctionResult from './pages/buyers/AuctionResultForBuyer';
 import SellerAuctionResult from './pages/sellers/AuctionResultForSeller';
+import TermsPage from './pages/TermsPage';
 
 const App = () => {
   return (
     <AuthProvider>
-      <Router>
-        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-        <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col">
-          <Routes>
+      <CurrencyProvider>
+        <Router>
+          <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+          <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col">
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/signin" element={<LoginPage />} />
             <Route path="/signup" element={<RegisterPage />} />
+            <Route path="/terms" element={<TermsPage />} />
 
             {/* Buyer Protected Routes */}
             <Route
@@ -164,6 +168,7 @@ const App = () => {
           </Routes>
         </div>
       </Router>
+      </CurrencyProvider>
     </AuthProvider>
   );
 };

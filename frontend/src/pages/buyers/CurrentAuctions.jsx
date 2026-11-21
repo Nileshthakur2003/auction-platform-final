@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import BuyerSidebar from '../../components/BuyerSidebar';
 import ApiConnector from '../../components/apiconnector';
 import CardSpotlight from '../../components/ui/CardSpotlight';
+import { useCurrency } from '../../context/CurrencyContext';
 import { Search, Calendar, ArrowRight } from 'lucide-react';
 
 const CurrentBuyerAuctions = () => {
+  const { format } = useCurrency();
   const [searchTerm, setSearchTerm] = useState('');
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,7 @@ const CurrentBuyerAuctions = () => {
                     <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 mb-4">
                       <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Current Top Bid</div>
                       <div className="text-xl sm:text-2xl font-black text-blue-400">
-                        ${Number(item.currentBid || 0).toLocaleString()}
+                        {format(item.currentBid || 0)}
                       </div>
                     </div>
                   </div>

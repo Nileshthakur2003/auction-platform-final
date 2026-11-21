@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="680" rx="16" fill="url(#bgGrad)"/>
+  <rect width="1200" height="680" rx="16" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Window Header -->
+  <rect width="1200" height="42" rx="16" fill="#090d16"/>
+  <rect y="30" width="1200" height="12" fill="#090d16"/>
+  <line x1="0" y1="42" x2="1200" y2="42" stroke="#1e293b" stroke-width="1"/>
+  
+  <!-- Window Controls -->
+  <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="21" r="6" fill="#10b981"/>
+
+  <!-- Address Bar -->
+  <rect x="180" y="8" width="840" height="26" rx="6" fill="#0f172a" stroke="#1e293b"/>
+  <text x="600" y="25" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" text-anchor="middle">
+    🔒 https://auctionhub.internal/profile/id-badge
+  </text>
+
+  <!-- Main Canvas -->
+  <g transform="translate(0, 42)">
+    
+  <g transform="translate(60, 20)">
+    <text x="0" y="24" fill="#ffffff" font-family="sans-serif" font-size="24" font-weight="900">Authorized Auction Credentials &amp; Printable ID Pass</text>
+    <text x="0" y="44" fill="#94a3b8" font-family="sans-serif" font-size="12">Standard CR80 Credit Card Size (85.6mm × 53.98mm) • Issued upon legal registration</text>
+
+    <!-- Side-by-Side Printable Sheet Template -->
+    <g transform="translate(40, 90)">
+      <!-- Front Badge -->
+      <g transform="translate(0, 0)">
+        <text x="240" y="-12" fill="#94a3b8" font-family="sans-serif" font-size="11" font-weight="700" text-anchor="middle">FRONT (OFFICIAL BADGE)</text>
+        <rect width="480" height="300" rx="20" fill="#020617" stroke="#10b981" stroke-width="2" filter="url(#cardShadow)"/>
+        
+        <!-- Guilloche Bar -->
+        <rect width="480" height="8" rx="4" fill="url(#emeraldGrad)"/>
+
+        <!-- Header -->
+        <g transform="translate(28, 30)">
+          <rect width="36" height="36" rx="10" fill="#064e3b" stroke="#10b981"/>
+          <text x="8" y="25" fill="#34d399" font-size="20">🏛</text>
+          <text x="48" y="18" fill="#ffffff" font-family="sans-serif" font-size="16" font-weight="900">AUCTIONHUB</text>
+          <text x="48" y="32" fill="#94a3b8" font-family="sans-serif" font-size="9" font-weight="700">CENTRAL ELECTRONIC REGISTRY</text>
+        </g>
+
+        <!-- Classification badge -->
+        <g transform="translate(320, 30)">
+          <rect width="130" height="24" rx="12" fill="#064e3b" stroke="#34d399"/>
+          <text x="65" y="16" fill="#a7f3d0" font-family="sans-serif" font-size="9" font-weight="900" text-anchor="middle">MERCHANT LICENSE</text>
+          <text x="65" y="38" fill="#64748b" font-family="monospace" font-size="9" text-anchor="middle">SEC-7F8B20-A1E5</text>
+        </g>
+
+        <!-- User Identity -->
+        <g transform="translate(28, 100)">
+          <rect width="84" height="84" rx="14" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+          <text x="24" y="55" fill="#10b981" font-size="36">👤</text>
+
+          <g transform="translate(104, 15)">
+            <text x="0" y="12" fill="#64748b" font-family="sans-serif" font-size="10" font-weight="700">AUTHORIZED HOLDER</text>
+            <text x="0" y="36" fill="#ffffff" font-family="sans-serif" font-size="22" font-weight="900">Nilesh Sharma</text>
+            <text x="0" y="54" fill="#60a5fa" font-family="monospace" font-size="11">nilesh.seller@auctionhub.org</text>
+          </g>
+        </g>
+
+        <!-- Footer details -->
+        <g transform="translate(28, 220)">
+          <line x1="0" y1="0" x2="424" y2="0" stroke="#1e293b"/>
+          
+          <g transform="translate(0, 16)">
+            <text x="0" y="12" fill="#64748b" font-family="sans-serif" font-size="9">REGISTRATION NUMBER</text>
+            <text x="0" y="30" fill="#e2e8f0" font-family="monospace" font-size="12" font-weight="800">AH-LIC-MERCHANT-8921-2026</text>
+          </g>
+
+          <g transform="translate(230, 16)">
+            <text x="0" y="12" fill="#64748b" font-family="sans-serif" font-size="9">ISSUED DATE</text>
+            <text x="0" y="30" fill="#e2e8f0" font-family="sans-serif" font-size="11" font-weight="700">20 Nov 2026</text>
+          </g>
+
+          <g transform="translate(340, 16)">
+            <text x="0" y="12" fill="#64748b" font-family="sans-serif" font-size="9">VALID THRU</text>
+            <text x="0" y="30" fill="#34d399" font-family="sans-serif" font-size="11" font-weight="900">20 Nov 2029</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- Center Fold / Cut Guide -->
+      <g transform="translate(510, 0)">
+        <line x1="30" y1="20" x2="30" y2="280" stroke="#64748b" stroke-dasharray="6,6"/>
+        <circle cx="30" cy="150" r="16" fill="#0f172a" stroke="#64748b"/>
+        <text x="21" y="156" fill="#94a3b8" font-size="16">✂</text>
+      </g>
+
+      <!-- Back Badge -->
+      <g transform="translate(580, 0)">
+        <text x="240" y="-12" fill="#94a3b8" font-family="sans-serif" font-size="11" font-weight="700" text-anchor="middle">BACK (STATUTORY COVENANTS &amp; QR)</text>
+        <rect width="480" height="300" rx="20" fill="#020617" stroke="#334155" stroke-width="1.5" filter="url(#cardShadow)"/>
+
+        <!-- Magnetic Stripe -->
+        <rect y="24" width="480" height="40" fill="#0f172a" stroke="#1e293b"/>
+        <text x="24" y="48" fill="#64748b" font-family="monospace" font-size="10" letter-spacing="2">
+          AH*REG*AH-LIC-MERCHANT-8921*VERIFIED*ESCROW*RECORD
+        </text>
+
+        <!-- Terms and QR -->
+        <g transform="translate(28, 90)">
+          <g transform="translate(0, 0)">
+            <text x="0" y="14" fill="#cbd5e1" font-family="sans-serif" font-size="10" font-weight="800">STATUTORY CONDITIONS OF USE:</text>
+            <text x="0" y="32" fill="#94a3b8" font-family="sans-serif" font-size="9">1. Non-transferable credential certifying verified legal contractual</text>
+            <text x="0" y="46" fill="#94a3b8" font-family="sans-serif" font-size="9">   capacity on the AuctionHub Electronic Exchange.</text>
+            <text x="0" y="66" fill="#94a3b8" font-family="sans-serif" font-size="9">2. Authorized title consignor under Section 64 of The Sale of Goods Act,</text>
+            <text x="0" y="80" fill="#94a3b8" font-family="sans-serif" font-size="9">   1930 &amp; Uniform Commercial Code § 2-328.</text>
+            <text x="0" y="104" fill="#64748b" font-family="monospace" font-size="9">Registry Hash: AH-SEC-REG-7F8B20C4891DA1E5</text>
+          </g>
+
+          <!-- Synthetic QR Box -->
+          <g transform="translate(340, 8)">
+            <rect width="84" height="84" rx="10" fill="#ffffff"/>
+            <!-- QR Pattern -->
+            <rect x="8" y="8" width="22" height="22" fill="#0f172a"/>
+            <rect x="12" y="12" width="14" height="14" fill="#ffffff"/>
+            <rect x="15" y="15" width="8" height="8" fill="#0f172a"/>
+
+            <rect x="54" y="8" width="22" height="22" fill="#0f172a"/>
+            <rect x="58" y="12" width="14" height="14" fill="#ffffff"/>
+            <rect x="61" y="15" width="8" height="8" fill="#0f172a"/>
+
+            <rect x="8" y="54" width="22" height="22" fill="#0f172a"/>
+            <rect x="12" y="58" width="14" height="14" fill="#ffffff"/>
+            <rect x="15" y="61" width="8" height="8" fill="#0f172a"/>
+
+            <rect x="36" y="36" width="12" height="12" fill="#0f172a"/>
+            <rect x="54" y="40" width="8" height="8" fill="#0f172a"/>
+            <rect x="40" y="56" width="16" height="8" fill="#0f172a"/>
+            <text x="42" y="100" fill="#64748b" font-family="sans-serif" font-size="8" font-weight="700" text-anchor="middle">SCAN TO VERIFY</text>
+          </g>
+        </g>
+
+        <!-- Signature -->
+        <g transform="translate(28, 230)">
+          <line x1="0" y1="0" x2="424" y2="0" stroke="#1e293b"/>
+          <text x="0" y="24" fill="#94a3b8" font-family="cursive" font-size="14">Signature: Nilesh Sharma</text>
+          <text x="424" y="24" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="end">✓ Cryptographically Sealed</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Print Action Buttons below -->
+    <g transform="translate(420, 480)">
+      <rect width="180" height="42" rx="10" fill="#1e293b" stroke="#334155"/>
+      <text x="90" y="26" fill="#cbd5e1" font-family="sans-serif" font-size="12" font-weight="700" text-anchor="middle">📥 Download Text Record</text>
+
+      <rect x="200" width="190" height="42" rx="10" fill="#059669"/>
+      <text x="295" y="26" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="800" text-anchor="middle">🖨 Print Official ID Badge</text>
+    </g>
+  </g>
+
+  </g>
+</svg>

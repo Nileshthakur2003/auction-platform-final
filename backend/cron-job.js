@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const connectDB = require('./db/dbconnect');
 const AuctionItem = require('./models/auctions');
 const Bidding = require('./models/biddings');
 
@@ -7,6 +9,20 @@ const Bidding = require('./models/biddings');
  */
 const finalizeExpiredAuctions = async (io = null) => {
   try {
+    // Ensure database connection is active before running queries
+    if (mongoose.connection.readyState !== 1) {
+      try {
+        await connectDB();
+      } catch (err) {
+        // Return gracefully without throwing so cron scheduler doesn't spam console
+        return { finalizedCount: 0, message: 'Database offline, skipped auction finalization' };
+      }
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      return { finalizedCount: 0, message: 'Database not connected' };
+    }
+
     const now = new Date();
 
     const expiredAuctions = await AuctionItem.find({

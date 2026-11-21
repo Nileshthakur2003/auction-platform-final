@@ -108,7 +108,10 @@ if (!process.env.VERCEL) {
     try {
       await finalizeExpiredAuctions(io);
     } catch (err) {
-      console.error('[Local Cron] Error finalizing auction items:', err);
+      // Avoid flooding the console with stack traces
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[Local Cron] Auction finalization skipped:', err.message);
+      }
     }
   });
 }
@@ -129,6 +132,11 @@ app.use((err, req, res, next) => {
 
 // Start listening if running directly as main entry (Local Development)
 if (!process.env.VERCEL && require.main === module) {
+  // Connect to database on server boot
+  connectDB().catch((err) => {
+    console.warn('[Server Boot] Initial MongoDB connection not ready. Will retry on request.');
+  });
+
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Local Socket.io enabled and listening for real-time bids`);

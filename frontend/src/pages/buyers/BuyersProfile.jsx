@@ -3,13 +3,15 @@ import toast from 'react-hot-toast';
 import { Modal, Button } from 'react-bootstrap';
 import BuyerSidebar from '../../components/BuyerSidebar';
 import ApiConnector from '../../components/apiconnector';
+import AuthorizedIdCardModal from '../../components/AuthorizedIdCardModal';
 import { useAuth } from '../../context/AuthContext';
-import { User, Mail, Shield, Edit3 } from 'lucide-react';
+import { User, Mail, Shield, Edit3, Award } from 'lucide-react';
 
 const BuyerProfile = () => {
   const { user: authUser, updateUser } = useAuth();
   const [profile, setProfile] = useState({ username: '', email: '', userType: '0' });
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showIdCard, setShowIdCard] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [loading, setLoading] = useState(true);
@@ -107,9 +109,24 @@ const BuyerProfile = () => {
                 <Edit3 className="w-4 h-4" />
                 <span>Edit Profile</span>
               </button>
+
+              <button
+                className="w-full mt-2.5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition border border-slate-700 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+                onClick={() => setShowIdCard(true)}
+              >
+                <Award className="w-4 h-4 text-blue-400" />
+                <span>View Official Bidder ID Pass</span>
+              </button>
             </div>
           </div>
         </div>
+
+        <AuthorizedIdCardModal
+          isOpen={showIdCard}
+          onClose={() => setShowIdCard(false)}
+          user={profile.username ? profile : authUser}
+          role="buyer"
+        />
       </main>
 
       {/* Edit Modal */}

@@ -5,17 +5,21 @@ import toast from 'react-hot-toast';
 import ApiConnector from '../../components/apiconnector';
 import BuyerSidebar from '../../components/BuyerSidebar';
 import CardSpotlight from '../../components/ui/CardSpotlight';
+import TermsModal from '../../components/TermsModal';
 import socket from '../../socket';
-import { Clock, ArrowLeft, ShieldCheck, Flame, Users, CheckCircle2 } from 'lucide-react';
+import { useCurrency } from '../../context/CurrencyContext';
+import { Clock, ArrowLeft, ShieldCheck, Flame, Users, CheckCircle2, Scale } from 'lucide-react';
 
 const BuyerAuctionDetail = () => {
   const { id } = useParams();
+  const { currentCurrency, format } = useCurrency();
   const [auction, setAuction] = useState(null);
   const [timeLeft, setTimeLeft] = useState('');
   const [isAuctionEnded, setIsAuctionEnded] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
 
   const fetchAuction = async () => {
@@ -49,7 +53,7 @@ const BuyerAuctionDetail = () => {
           bids: updatedBids,
         };
       });
-      toast.success(`⚡ New highest bid: $${data.currentBid} by ${data.highestBidder}!`);
+      toast.success(`⚡ New highest bid: ${format(data.currentBid)} by ${data.highestBidder}!`);
     });
 
     socket.on('auction_closed', (data) => {
@@ -94,19 +98,25 @@ const BuyerAuctionDetail = () => {
   const handleBidSubmit = async (e) => {
     e.preventDefault();
     const numericBid = parseFloat(bidAmount);
+    const minBidInCurrent = Number((Number(auction?.currentBid || 0) * currentCurrency.rateFromUSD).toFixed(2));
 
-    if (isNaN(numericBid) || numericBid <= parseFloat(auction.currentBid)) {
-      toast.error(`Your bid must be strictly greater than $${auction.currentBid}`);
+    if (isNaN(numericBid) || numericBid <= minBidInCurrent) {
+      toast.error(
+        `Your bid must be strictly greater than ${currentCurrency.symbol}${minBidInCurrent.toLocaleString()} (${currentCurrency.code})`
+      );
       return;
     }
 
+    // Convert bid from user's currentCurrency to normalized USD base for database consistency
+    const bidInUSD = Number((numericBid / currentCurrency.rateFromUSD).toFixed(2));
+
     setSubmitting(true);
     try {
-      await ApiConnector.post(`/bid/${id}`, { bid: numericBid });
+      await ApiConnector.post(`/bid/${id}`, { bid: bidInUSD });
       toast.success('Bid placed successfully!');
       setAuction((prev) => ({
         ...prev,
-        currentBid: numericBid,
+        currentBid: bidInUSD,
       }));
       setBidAmount('');
     } catch (error) {
@@ -200,7 +210,7 @@ const BuyerAuctionDetail = () => {
                     Current Highest Bid
                   </span>
                   <div className="text-4xl sm:text-5xl font-black text-blue-400 my-2">
-                    ${Number(auction.currentBid || 0).toLocaleString()}
+                    {format(auction.currentBid)}
                   </div>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
                     <Clock className="w-3.5 h-3.5" />
@@ -224,36 +234,46 @@ const BuyerAuctionDetail = () => {
                   <form onSubmit={handleBidSubmit} className="space-y-4">
                     <div>
                       <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
-                        Your Bid Amount ($ USD)
+                        Your Bid Amount ({currentCurrency.code})
                       </label>
                       <div className="relative">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">{currentCurrency.symbol}</span>
                         <input
                           type="number"
                           step="0.01"
-                          min={parseFloat(auction.currentBid) + 1}
+                          min={((Number(auction.currentBid || 0) * currentCurrency.rateFromUSD) + 0.01).toFixed(2)}
                           className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold text-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                          placeholder={`${parseFloat(auction.currentBid) + 10}`}
+                          placeholder={`${Math.ceil(Number(auction.currentBid || 0) * currentCurrency.rateFromUSD + (currentCurrency.code === 'INR' ? 100 : 5))}`}
                           value={bidAmount}
                           onChange={(e) => setBidAmount(e.target.value)}
                           required
                         />
                       </div>
-                      <span className="text-[11px] text-slate-500 mt-1 block">
-                        Must be strictly higher than ${Number(auction.currentBid).toLocaleString()}
-                      </span>
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
+                        <span>
+                          Must exceed {format(auction.currentBid)}
+                        </span>
+                        {currentCurrency.code !== 'USD' && bidAmount && !isNaN(parseFloat(bidAmount)) && (
+                          <span className="text-emerald-400 font-mono font-medium">
+                            ≈ ${(parseFloat(bidAmount) / currentCurrency.rateFromUSD).toFixed(2)} USD
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Quick increment buttons (Mobile thumb friendly) */}
+                    {/* Quick increment buttons (scaled by currency) */}
                     <div className="grid grid-cols-3 gap-2">
-                      {[10, 50, 100].map((inc) => (
+                      {(currentCurrency.code === 'INR' ? [100, 500, 1000] : [10, 50, 100]).map((inc) => (
                         <button
                           key={inc}
                           type="button"
                           className="py-2.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs sm:text-sm font-semibold transition active:scale-95 cursor-pointer min-h-[44px]"
-                          onClick={() => setBidAmount((parseFloat(auction.currentBid) + inc).toFixed(2))}
+                          onClick={() => {
+                            const baseVal = Number((Number(auction.currentBid || 0) * currentCurrency.rateFromUSD).toFixed(2));
+                            setBidAmount((baseVal + inc).toFixed(0));
+                          }}
                         >
-                          +${inc}
+                          +{currentCurrency.symbol}{inc}
                         </button>
                       ))}
                     </div>
@@ -265,6 +285,20 @@ const BuyerAuctionDetail = () => {
                     >
                       {submitting ? 'Submitting Bid...' : 'Place Bid Now'}
                     </button>
+
+                    <div className="pt-2 text-center">
+                      <p className="text-[11px] text-slate-500 leading-normal">
+                        Every placed bid is legally binding under applicable auction law.{' '}
+                        <button
+                          type="button"
+                          onClick={() => setShowTermsModal(true)}
+                          className="text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-2 inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Scale className="w-3 h-3 inline" />
+                          <span>View Legal Terms & Conditions</span>
+                        </button>
+                      </p>
+                    </div>
                   </form>
                 )}
               </CardSpotlight>
@@ -283,7 +317,7 @@ const BuyerAuctionDetail = () => {
                   <div className="p-2 sm:p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
                     <span className="text-[10px] sm:text-xs text-slate-500 block uppercase">Starting Price</span>
                     <span className="font-bold text-slate-200 text-sm sm:text-base">
-                      ${auction.startingBid || auction.currentBid}
+                      {format(auction.startingBid || auction.currentBid)}
                     </span>
                   </div>
                   <div className="p-2 sm:p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
@@ -339,7 +373,7 @@ const BuyerAuctionDetail = () => {
                         </div>
 
                         <div className="text-sm sm:text-base font-extrabold text-blue-400">
-                          ${Number(b.bidAmount).toLocaleString()}
+                          {format(b.bidAmount)}
                         </div>
                       </div>
                     ))}
@@ -353,6 +387,11 @@ const BuyerAuctionDetail = () => {
             </div>
           </div>
         </div>
+
+        <TermsModal
+          isOpen={showTermsModal}
+          onClose={() => setShowTermsModal(false)}
+        />
       </main>
     </div>
   );

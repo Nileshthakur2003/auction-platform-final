@@ -5,9 +5,12 @@ import { z } from 'zod';
 import moment from 'moment-timezone';
 import SellerSidebar from '../../components/SellerSidebar';
 import ApiConnector from '../../components/apiconnector';
-import { ArrowLeft, PlusCircle } from 'lucide-react';
+import TermsModal from '../../components/TermsModal';
+import { useCurrency } from '../../context/CurrencyContext';
+import { ArrowLeft, PlusCircle, Scale } from 'lucide-react';
 
 const PostAuction = () => {
+  const { currentCurrency } = useCurrency();
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
   const [startingBid, setStartingBid] = useState('');
@@ -15,6 +18,8 @@ const PostAuction = () => {
   const [closingTime, setClosingTime] = useState('');
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(true);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -34,10 +39,14 @@ const PostAuction = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const rawStartingBid = parseFloat(startingBid);
+    // Convert starting bid from seller's active currency to USD base
+    const startingBidUSD = Number((rawStartingBid / currentCurrency.rateFromUSD).toFixed(2));
+
     const newItem = {
       itemName,
       description,
-      startingBid: parseFloat(startingBid),
+      startingBid: startingBidUSD,
       openingTime: moment.tz(openingTime, 'Asia/Kolkata').toDate().toISOString(),
       closingTime: moment.tz(closingTime, 'Asia/Kolkata').toDate().toISOString(),
     };
@@ -47,6 +56,11 @@ const PostAuction = () => {
       const formErrors = validationResult.error.formErrors.fieldErrors;
       setErrors(formErrors);
       toast.error('Please resolve the form validation errors');
+      return;
+    }
+
+    if (!agreedTerms) {
+      toast.error('You must agree to the legal auction terms to publish a listing');
       return;
     }
 
@@ -110,21 +124,28 @@ const PostAuction = () => {
 
               <div>
                 <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
-                  Starting Bid ($ USD)
+                  Starting Bid ({currentCurrency.code})
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">
+                    {currentCurrency.symbol}
+                  </span>
                   <input
                     type="number"
                     step="0.01"
                     min="1"
                     className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm sm:text-base font-bold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition min-h-[44px]"
-                    placeholder="150.00"
+                    placeholder={currentCurrency.code === 'INR' ? '1000.00' : '50.00'}
                     value={startingBid}
                     onChange={(e) => setStartingBid(e.target.value)}
                     required
                   />
                 </div>
+                {currentCurrency.code !== 'USD' && startingBid && !isNaN(parseFloat(startingBid)) && (
+                  <span className="text-[11px] text-emerald-400/90 mt-1 block font-mono">
+                    ≈ ${(parseFloat(startingBid) / currentCurrency.rateFromUSD).toFixed(2)} USD base rate (1 USD = {currentCurrency.rateFromUSD} {currentCurrency.code})
+                  </span>
+                )}
                 {errors.startingBid && <p className="text-xs text-rose-400 mt-1">{errors.startingBid}</p>}
               </div>
 
@@ -173,6 +194,29 @@ const PostAuction = () => {
                 {errors.description && <p className="text-xs text-rose-400 mt-1">{errors.description}</p>}
               </div>
 
+              {/* Minimalist Legal Terms & Title Warranty Confirmation */}
+              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="termsAgree"
+                  checked={agreedTerms}
+                  onChange={(e) => setAgreedTerms(e.target.checked)}
+                  className="mt-1 w-4 h-4 rounded border-slate-700 text-emerald-600 focus:ring-emerald-500 bg-slate-900 cursor-pointer shrink-0"
+                  required
+                />
+                <label htmlFor="termsAgree" className="text-xs text-slate-400 cursor-pointer select-none leading-relaxed">
+                  I warrant lawful ownership and good title to this lot and agree to the{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTermsModal(true)}
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-2 inline cursor-pointer"
+                  >
+                    Auction Legal Terms & Conditions
+                  </button>{' '}
+                  (irrevocable deed conveyance upon fall of the hammer).
+                </label>
+              </div>
+
               <button
                 type="submit"
                 disabled={submitting}
@@ -184,6 +228,11 @@ const PostAuction = () => {
             </form>
           </div>
         </div>
+
+        <TermsModal
+          isOpen={showTermsModal}
+          onClose={() => setShowTermsModal(false)}
+        />
       </main>
     </div>
   );

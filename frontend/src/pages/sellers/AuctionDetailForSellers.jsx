@@ -6,9 +6,11 @@ import ApiConnector from '../../components/apiconnector';
 import SellerSidebar from '../../components/SellerSidebar';
 import CardSpotlight from '../../components/ui/CardSpotlight';
 import socket from '../../socket';
+import { useCurrency } from '../../context/CurrencyContext';
 import { ArrowLeft, Edit3, Award, Users, Calendar, DollarSign } from 'lucide-react';
 
 const SellerAuctionDetail = () => {
+  const { format } = useCurrency();
   const { id } = useParams();
   const [auction, setAuction] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +52,7 @@ const SellerAuctionDetail = () => {
           bids: updatedBids,
         };
       });
-      toast.success(`⚡ New bid received: $${data.currentBid} by ${data.highestBidder}`);
+      toast.success(`⚡ New bid received: ${format(data.currentBid)} by ${data.highestBidder}`);
     });
 
     socket.on('auction_closed', () => {
@@ -177,11 +179,11 @@ const SellerAuctionDetail = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-4 border-t border-slate-800">
                   <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
                     <span className="text-[10px] text-slate-500 block uppercase">Starting Bid</span>
-                    <span className="font-bold text-white text-sm sm:text-base">${auction.startingBid || auction.currentBid}</span>
+                    <span className="font-bold text-white text-sm sm:text-base">{format(auction.startingBid || auction.currentBid)}</span>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
                     <span className="text-[10px] text-slate-500 block uppercase">Top Bid</span>
-                    <span className="font-bold text-emerald-400 text-sm sm:text-base">${auction.currentBid}</span>
+                    <span className="font-bold text-emerald-400 text-sm sm:text-base">{format(auction.currentBid)}</span>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
                     <span className="text-[10px] text-slate-500 block uppercase">Bids</span>
@@ -204,7 +206,7 @@ const SellerAuctionDetail = () => {
                   Leading Offer
                 </span>
                 <div className="text-3xl sm:text-4xl font-black text-emerald-400 mb-4">
-                  ${Number(auction.currentBid || 0).toLocaleString()}
+                  {format(auction.currentBid || 0)}
                 </div>
 
                 <div className="space-y-2 text-xs text-slate-400 mb-6 pb-6 border-b border-slate-800">
@@ -247,7 +249,7 @@ const SellerAuctionDetail = () => {
                     </span>
                   </div>
                   <div className="font-extrabold text-emerald-400 text-sm sm:text-base">
-                    ${Number(b.bidAmount).toLocaleString()}
+                    {format(b.bidAmount)}
                   </div>
                 </div>
               ))}

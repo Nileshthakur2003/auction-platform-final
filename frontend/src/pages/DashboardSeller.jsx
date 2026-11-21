@@ -4,9 +4,11 @@ import ApiConnector from '../components/apiconnector';
 import Sidebar from '../components/SellerSidebar';
 import CardSpotlight from '../components/ui/CardSpotlight';
 import socket from '../socket';
+import { useCurrency } from '../context/CurrencyContext';
 import { Plus, Package, DollarSign, Users, TrendingUp, Calendar } from 'lucide-react';
 
 const DashboardSeller = () => {
+  const { format } = useCurrency();
   const [activeListings, setActiveListings] = useState([]);
   const [globalAuctions, setGlobalAuctions] = useState([]);
   const [totalAuctions, setTotalAuctions] = useState(0);
@@ -137,7 +139,7 @@ const DashboardSeller = () => {
                 </div>
               </div>
               <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
-                {loading ? '...' : `$${Number(earnings).toLocaleString()}`}
+                {loading ? '...' : format(earnings)}
               </div>
               <div className="text-xs text-slate-500 mt-1">From settled winning bids</div>
             </CardSpotlight>
@@ -196,7 +198,7 @@ const DashboardSeller = () => {
                           Top Bid Offer
                         </div>
                         <div className="text-xl sm:text-2xl font-black text-emerald-400">
-                          ${Number(auction.currentBid || 0).toLocaleString()}
+                          {format(auction.currentBid || 0)}
                         </div>
                       </div>
                     </div>

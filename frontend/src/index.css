@@ -50,3 +50,75 @@
 .animate-pulse-glow {
   animation: pulseGlow 4s ease-in-out infinite;
 }
+
+/* Print-Specific Legal Document & ID Card Formatting */
+@media print {
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide background elements, app chrome, headers, modals' dark backdrop */
+  header, aside, nav, footer, .print\:hidden {
+    display: none !important;
+  }
+
+  /* Ensure modal backdrop doesn't darken the page during print */
+  .fixed.inset-0 {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .relative.w-full.max-w-5xl,
+  .relative.w-full.max-w-2xl {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Target the printable legal deed container */
+  #printable-legal-deed {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 12mm !important;
+    box-shadow: none !important;
+    border: 2px solid #0f172a !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    page-break-inside: avoid;
+    border-radius: 4px !important;
+  }
+
+  /* Target printable ID badge container */
+  #printable-id-card {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    margin: 10mm auto !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+}
+

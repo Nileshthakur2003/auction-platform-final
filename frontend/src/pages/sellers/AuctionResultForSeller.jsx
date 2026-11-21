@@ -4,12 +4,18 @@ import moment from 'moment';
 import ApiConnector from '../../components/apiconnector';
 import SellerSidebar from '../../components/SellerSidebar';
 import CardSpotlight from '../../components/ui/CardSpotlight';
-import { ArrowLeft, Trophy, CheckCircle2 } from 'lucide-react';
+import LegalDocumentModal from '../../components/LegalDocumentModal';
+import TermsModal from '../../components/TermsModal';
+import { useCurrency } from '../../context/CurrencyContext';
+import { ArrowLeft, Trophy, CheckCircle2, FileText, Scale } from 'lucide-react';
 
 const SellerAuctionResult = () => {
+  const { format } = useCurrency();
   const { id } = useParams();
   const [auction, setAuction] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDocModal, setShowDocModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,7 +107,7 @@ const SellerAuctionResult = () => {
                   Final Realized Sale
                 </span>
                 <div className="text-3xl sm:text-4xl font-black text-emerald-400 mb-2">
-                  ${Number(auction.currentBid || 0).toLocaleString()}
+                  {format(auction.currentBid || 0)}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-300">
                   <Trophy className="w-4 h-4 text-emerald-400" />
@@ -125,14 +131,46 @@ const SellerAuctionResult = () => {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs sm:text-sm flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-              <span>
-                This auction is officially complete. The winning bid has been added to your gross proceeds.
-              </span>
+            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs sm:text-sm flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                <span>
+                  This auction is officially complete. The winning bid has been added to your gross proceeds.
+                </span>
+              </div>
+            </div>
+
+            {/* Legal Documents & Terms Actions */}
+            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowDocModal(true)}
+                className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Generate Legal Bill of Sale & Settlement Deed</span>
+              </button>
+              <button
+                onClick={() => setShowTermsModal(true)}
+                className="py-3 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+              >
+                <Scale className="w-4 h-4 text-emerald-400" />
+                <span>Auction Legal Terms</span>
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Legal Modals */}
+        <LegalDocumentModal
+          isOpen={showDocModal}
+          onClose={() => setShowDocModal(false)}
+          auction={auction}
+          role="seller"
+        />
+        <TermsModal
+          isOpen={showTermsModal}
+          onClose={() => setShowTermsModal(false)}
+        />
       </main>
     </div>
   );

@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="720" rx="16" fill="url(#bgGrad)"/>
+  <rect width="1200" height="720" rx="16" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Window Header -->
+  <rect width="1200" height="42" rx="16" fill="#090d16"/>
+  <rect y="30" width="1200" height="12" fill="#090d16"/>
+  <line x1="0" y1="42" x2="1200" y2="42" stroke="#1e293b" stroke-width="1"/>
+  
+  <!-- Window Controls -->
+  <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="21" r="6" fill="#10b981"/>
+
+  <!-- Address Bar -->
+  <rect x="180" y="8" width="840" height="26" rx="6" fill="#0f172a" stroke="#1e293b"/>
+  <text x="600" y="25" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" text-anchor="middle">
+    🔒 https://auctionhub.internal/legal/deed-generator
+  </text>
+
+  <!-- Main Canvas -->
+  <g transform="translate(0, 42)">
+    
+  <g transform="translate(60, 20)">
+    <text x="0" y="24" fill="#ffffff" font-family="sans-serif" font-size="24" font-weight="900">Legal Document &amp; Certified Bill of Sale</text>
+    <text x="0" y="44" fill="#94a3b8" font-family="sans-serif" font-size="12">Statutory Bills of Sale, Tax Invoices &amp; Certificates of Provenance (India SOGA §64 / USA UCC §2-328)</text>
+
+    <!-- Controls Bar -->
+    <g transform="translate(0, 60)">
+      <rect width="1080" height="50" rx="10" fill="#0f172a" stroke="#1e293b"/>
+      
+      <text x="20" y="30" fill="#94a3b8" font-family="sans-serif" font-size="11" font-weight="600">JURISDICTION:</text>
+      <rect x="110" y="10" width="140" height="30" rx="6" fill="#059669"/>
+      <text x="180" y="29" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="700" text-anchor="middle">🇮🇳 India (GST / SOGA)</text>
+
+      <rect x="260" y="10" width="130" height="30" rx="6" fill="#020617"/>
+      <text x="325" y="29" fill="#94a3b8" font-family="sans-serif" font-size="11" font-weight="600" text-anchor="middle">🇺🇸 USA (UCC 2-328)</text>
+
+      <rect x="400" y="10" width="140" height="30" rx="6" fill="#020617"/>
+      <text x="470" y="29" fill="#94a3b8" font-family="sans-serif" font-size="11" font-weight="600" text-anchor="middle">🌐 Global (UNCITRAL)</text>
+
+      <rect x="820" y="10" width="110" height="30" rx="6" fill="#1e293b"/>
+      <text x="875" y="29" fill="#e2e8f0" font-family="sans-serif" font-size="11" font-weight="700" text-anchor="middle">🎛 Customize</text>
+
+      <rect x="940" y="10" width="120" height="30" rx="6" fill="#059669"/>
+      <text x="1000" y="29" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="800" text-anchor="middle">🖨 Print / PDF</text>
+    </g>
+
+    <!-- Deed Canvas (White Paper Style) -->
+    <g transform="translate(180, 125)">
+      <rect width="720" height="520" rx="4" fill="#ffffff" filter="url(#cardShadow)"/>
+      <rect width="720" height="520" fill="none" stroke="#0f172a" stroke-width="2"/>
+
+      <g transform="translate(40, 36)" font-family="serif">
+        <!-- Header -->
+        <circle cx="20" cy="20" r="16" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+        <text x="13" y="26" fill="#059669" font-family="sans-serif" font-size="18">⚖</text>
+        <text x="48" y="20" fill="#0f172a" font-family="sans-serif" font-size="18" font-weight="900">AUCTIONHUB LEGAL REGISTRY</text>
+        <text x="48" y="34" fill="#64748b" font-family="sans-serif" font-size="9" font-weight="700">CENTRAL ELECTRONIC AUCTIONEER, TITLE ESCROW &amp; SETTLEMENT AUTHORITY</text>
+
+        <rect x="470" y="6" width="170" height="20" fill="#f1f5f9" stroke="#cbd5e1"/>
+        <text x="555" y="20" fill="#0f172a" font-family="sans-serif" font-size="8" font-weight="800" text-anchor="middle">BILL OF SALE &amp; TITLE DEED</text>
+        <text x="640" y="36" fill="#64748b" font-family="monospace" font-size="8" text-anchor="end">AH-DOC-INDIA-771-20261120</text>
+
+        <!-- Rule -->
+        <line x1="0" y1="50" x2="640" y2="50" stroke="#0f172a" stroke-width="2"/>
+
+        <!-- Conversion line -->
+        <text x="0" y="66" fill="#475569" font-family="sans-serif" font-size="9">Base Catalog: $75,000 USD | Benchmark Conversion: 1 USD = ₹85.50 INR | Settlement: INR (₹)</text>
+
+        <!-- Parties Box -->
+        <g transform="translate(0, 80)">
+          <rect width="310" height="65" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="12" y="16" fill="#0f172a" font-family="sans-serif" font-size="9" font-weight="800">CONSIGNOR / LICENSED SELLER</text>
+          <text x="12" y="32" fill="#1e293b" font-family="sans-serif" font-size="11" font-weight="700">Apex Historic Memorabilia Pvt Ltd</text>
+          <text x="12" y="46" fill="#64748b" font-family="sans-serif" font-size="9">GSTIN/PAN: 07AABCA1234F1Z8 • Warranty: Vested Title</text>
+
+          <rect x="330" width="310" height="65" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="342" y="16" fill="#0f172a" font-family="sans-serif" font-size="9" font-weight="800">GRANTEE / HIGH BIDDER</text>
+          <text x="342" y="32" fill="#1e293b" font-family="sans-serif" font-size="11" font-weight="700">Nilesh Sharma (Verified Bidder)</text>
+          <text x="342" y="46" fill="#64748b" font-family="sans-serif" font-size="9">Status: Fall of Digital Hammer Confirmed Under IT Act 2000</text>
+        </g>
+
+        <!-- Lot specification -->
+        <g transform="translate(0, 160)">
+          <rect width="640" height="60" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="12" y="18" fill="#0f172a" font-family="sans-serif" font-size="12" font-weight="800">1968 Ford Mustang GT Fastback 390 (Highlands Green)</text>
+          <text x="12" y="36" fill="#475569" font-family="serif" font-size="10">Lot Ref: AH-LOT-771 • Fully restored S-Code 390 V8 with 4-speed Toploader transmission.</text>
+          <text x="12" y="50" fill="#059669" font-family="sans-serif" font-size="9" font-weight="700">Addendum: Insured transport arranged to Delhi NCR with covered container.</text>
+        </g>
+
+        <!-- Financial Consideration Table -->
+        <g transform="translate(0, 235)">
+          <text x="0" y="14" fill="#0f172a" font-family="sans-serif" font-size="10" font-weight="800">STATUTORY CONSIDERATION &amp; TAX BREAKDOWN</text>
+          <line x1="0" y1="20" x2="640" y2="20" stroke="#cbd5e1"/>
+          
+          <text x="0" y="36" fill="#1e293b" font-family="sans-serif" font-size="10">1. Final Hammer Price (Winning Bid)</text>
+          <text x="640" y="36" fill="#0f172a" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="end">₹64,12,500.00</text>
+
+          <text x="0" y="52" fill="#1e293b" font-family="sans-serif" font-size="10">2. Platform Premium &amp; Title Escrow (5.0%)</text>
+          <text x="640" y="52" fill="#0f172a" font-family="sans-serif" font-size="10" text-anchor="end">₹3,20,625.00</text>
+
+          <text x="0" y="68" fill="#1e293b" font-family="sans-serif" font-size="10">3. Statutory GST (18% - CGST 9% + SGST 9%)</text>
+          <text x="640" y="68" fill="#0f172a" font-family="sans-serif" font-size="10" text-anchor="end">₹12,11,962.50</text>
+
+          <line x1="0" y1="78" x2="640" y2="78" stroke="#0f172a" stroke-width="1.5"/>
+          <text x="0" y="94" fill="#0f172a" font-family="sans-serif" font-size="12" font-weight="900">TOTAL CONSIDERATION SETTLED &amp; CONFERRED</text>
+          <text x="640" y="94" fill="#0f172a" font-family="sans-serif" font-size="14" font-weight="900" text-anchor="end">₹79,45,087.50</text>
+        </g>
+
+        <!-- Signatures Block -->
+        <g transform="translate(0, 360)">
+          <line x1="0" y1="0" x2="640" y2="0" stroke="#0f172a" stroke-width="1.5"/>
+
+          <g transform="translate(30, 10)">
+            <line x1="0" y1="36" x2="160" y2="36" stroke="#94a3b8"/>
+            <text x="80" y="32" fill="#475569" font-family="monospace" font-size="8" text-anchor="middle">[SEALED ELECTRONICALLY]</text>
+            <text x="80" y="50" fill="#0f172a" font-family="sans-serif" font-size="9" font-weight="700" text-anchor="middle">Consignor / Seller</text>
+            <text x="80" y="62" fill="#64748b" font-family="sans-serif" font-size="8" text-anchor="middle">Vested Title Transfer</text>
+          </g>
+
+          <g transform="translate(240, 10)">
+            <line x1="0" y1="36" x2="160" y2="36" stroke="#94a3b8"/>
+            <text x="80" y="32" fill="#475569" font-family="monospace" font-size="8" text-anchor="middle">[DIGITALLY ACCEPTED]</text>
+            <text x="80" y="50" fill="#0f172a" font-family="sans-serif" font-size="9" font-weight="700" text-anchor="middle">Grantee / Purchaser</text>
+            <text x="80" y="62" fill="#64748b" font-family="sans-serif" font-size="8" text-anchor="middle">Ownership Covenant</text>
+          </g>
+
+          <g transform="translate(450, 10)">
+            <line x1="0" y1="36" x2="160" y2="36" stroke="#059669"/>
+            <text x="80" y="32" fill="#059669" font-family="monospace" font-size="8" font-weight="700" text-anchor="middle">✓ REGISTRY SEAL</text>
+            <text x="80" y="50" fill="#0f172a" font-family="sans-serif" font-size="9" font-weight="700" text-anchor="middle">AuctionHub Authority</text>
+            <text x="80" y="62" fill="#64748b" font-family="sans-serif" font-size="8" text-anchor="middle">Statutory Escrow Officer</text>
+          </g>
+
+          <text x="320" y="88" fill="#94a3b8" font-family="monospace" font-size="7" text-anchor="middle">
+            SHA256: 7F8B20C4891DA1E5 • IMMUTABLE RECORD AH-LOT-771
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  </g>
+</svg>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCurrency } from '../context/CurrencyContext';
 
 const AuctionDetail = ({ item }) => {
+  const { format } = useCurrency();
   const navigate = useNavigate();
 
   if (!item) {
@@ -26,7 +28,7 @@ const AuctionDetail = ({ item }) => {
         <h3 className="text-xl font-bold text-white mb-2">{item.title || item.itemName}</h3>
         <p className="text-slate-400 text-sm mb-4">{item.description}</p>
         <p className="text-slate-200 text-sm mb-6">
-          <strong className="text-white">Starting Bid: </strong>${item.startingBid}
+          <strong className="text-white">Starting Bid: </strong>{format(item.startingBid)}
         </p>
         <button
           className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/20 transition cursor-pointer"

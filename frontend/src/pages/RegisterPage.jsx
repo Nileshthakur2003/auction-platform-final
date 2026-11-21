@@ -5,7 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import Spotlight from '../components/ui/Spotlight';
 import BackgroundBeams from '../components/ui/BackgroundBeams';
 import CardSpotlight from '../components/ui/CardSpotlight';
-import { User, Mail, Lock, Briefcase, ArrowRight, Gavel } from 'lucide-react';
+import AuthorizedIdCardModal from '../components/AuthorizedIdCardModal';
+import { User, Mail, Lock, Briefcase, ArrowRight, Gavel, Award } from 'lucide-react';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -13,6 +14,8 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState('0'); // 0: Buyer, 1: Seller
   const [submitting, setSubmitting] = useState(false);
+  const [registeredUser, setRegisteredUser] = useState(null);
+  const [showIdModal, setShowIdModal] = useState(false);
 
   const navigate = useNavigate();
   const { register } = useAuth();
@@ -40,8 +43,13 @@ const RegisterPage = () => {
       });
 
       if (result.success) {
-        toast.success('Registration successful! Please sign in.');
-        navigate('/signin');
+        toast.success('Registration successful! Legal credential generated.');
+        setRegisteredUser({
+          username: username.trim(),
+          email: email.trim(),
+          userType,
+        });
+        setShowIdModal(true);
       } else {
         toast.error(result.message);
       }
@@ -171,6 +179,17 @@ const RegisterPage = () => {
             </p>
           </div>
         </CardSpotlight>
+
+        {/* Authorized Legal ID Card Modal upon registration */}
+        <AuthorizedIdCardModal
+          isOpen={showIdModal}
+          onClose={() => {
+            setShowIdModal(false);
+            navigate('/signin');
+          }}
+          user={registeredUser}
+          role={registeredUser?.userType === '1' ? 'seller' : 'buyer'}
+        />
       </div>
     </div>
   );

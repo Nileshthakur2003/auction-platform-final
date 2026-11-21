@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="680" rx="16" fill="url(#bgGrad)"/>
+  <rect width="1200" height="680" rx="16" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Window Header -->
+  <rect width="1200" height="42" rx="16" fill="#090d16"/>
+  <rect y="30" width="1200" height="12" fill="#090d16"/>
+  <line x1="0" y1="42" x2="1200" y2="42" stroke="#1e293b" stroke-width="1"/>
+  
+  <!-- Window Controls -->
+  <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="21" r="6" fill="#10b981"/>
+
+  <!-- Address Bar -->
+  <rect x="180" y="8" width="840" height="26" rx="6" fill="#0f172a" stroke="#1e293b"/>
+  <text x="600" y="25" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="12" text-anchor="middle">
+    🔒 https://auctionhub.internal/docs/architecture
+  </text>
+
+  <!-- Main Canvas -->
+  <g transform="translate(0, 42)">
+    
+  <g transform="translate(60, 20)">
+    <text x="0" y="24" fill="#ffffff" font-family="sans-serif" font-size="24" font-weight="900">System Architecture &amp; Multi-Service Topology</text>
+    <text x="0" y="44" fill="#94a3b8" font-family="sans-serif" font-size="12">Vercel Multi-Service Engine, Socket.io Real-Time Protocol, Express &amp; MongoDB Atlas</text>
+
+    <!-- Architecture Boxes -->
+    <g transform="translate(40, 90)">
+      <!-- 1. Client Tier -->
+      <g transform="translate(0, 0)">
+        <rect width="280" height="440" rx="16" fill="#0f172a" stroke="#3b82f6" stroke-width="2"/>
+        <rect width="280" height="36" rx="16" fill="#1e3a8a"/>
+        <text x="140" y="24" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="800" text-anchor="middle">CLIENT TIER (VITE + REACT 19)</text>
+
+        <g transform="translate(20, 56)">
+          <rect width="240" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#60a5fa" font-family="sans-serif" font-size="12" font-weight="700">Aceternity UI &amp; Tailwind v4</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Spotlight, Beams, BentoGrid</text>
+        </g>
+
+        <g transform="translate(20, 130)">
+          <rect width="240" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#34d399" font-family="sans-serif" font-size="12" font-weight="700">CurrencyContext &amp; Switcher</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">INR ₹, USD $, EUR €, GBP £</text>
+        </g>
+
+        <g transform="translate(20, 204)">
+          <rect width="240" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#f59e0b" font-family="sans-serif" font-size="12" font-weight="700">Legal Deed &amp; ID Generator</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">A4 Printable Deed, CR80 Badges</text>
+        </g>
+
+        <g transform="translate(20, 278)">
+          <rect width="240" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#c084fc" font-family="sans-serif" font-size="12" font-weight="700">Role-Based Dashboard Portals</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Consignor (1) &amp; Bidder (0) Views</text>
+        </g>
+
+        <g transform="translate(20, 352)">
+          <rect width="240" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#38bdf8" font-family="sans-serif" font-size="12" font-weight="700">Socket.io Client Hook</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">join_auction, bid_updated, feed</text>
+        </g>
+      </g>
+
+      <!-- Connectors 1 -> 2 -->
+      <g transform="translate(280, 140)">
+        <line x1="0" y1="0" x2="100" y2="0" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,4"/>
+        <text x="50" y="-8" fill="#60a5fa" font-family="monospace" font-size="9" text-anchor="middle">REST HTTP</text>
+
+        <line x1="0" y1="200" x2="100" y2="200" stroke="#10b981" stroke-width="2"/>
+        <text x="50" y="192" fill="#34d399" font-family="monospace" font-size="9" text-anchor="middle">WSS :5001</text>
+      </g>
+
+      <!-- 2. Server Tier -->
+      <g transform="translate(380, 0)">
+        <rect width="320" height="440" rx="16" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+        <rect width="320" height="36" rx="16" fill="#064e3b"/>
+        <text x="160" y="24" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="800" text-anchor="middle">BACKEND TIER (EXPRESS / NODE)</text>
+
+        <g transform="translate(20, 56)">
+          <rect width="280" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#10b981" font-family="sans-serif" font-size="12" font-weight="700">Vercel Multi-Service Router</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Top-level rewrites (/api/(.*) -> backend)</text>
+        </g>
+
+        <g transform="translate(20, 130)">
+          <rect width="280" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#60a5fa" font-family="sans-serif" font-size="12" font-weight="700">Real-Time Socket.io Server</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Room broadcasts, outbid alerts</text>
+        </g>
+
+        <g transform="translate(20, 204)">
+          <rect width="280" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#f59e0b" font-family="sans-serif" font-size="12" font-weight="700">Role Validation &amp; Shill Guard</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">JWT verification, self-bidding blocks</text>
+        </g>
+
+        <g transform="translate(20, 278)">
+          <rect width="280" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#ec4899" font-family="sans-serif" font-size="12" font-weight="700">Automated Settlement Worker</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Cron job evaluates expired lots, awards title</text>
+        </g>
+
+        <g transform="translate(20, 352)">
+          <rect width="280" height="60" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#a78bfa" font-family="sans-serif" font-size="12" font-weight="700">DNS SRV Resilience Layer</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">8.8.8.8, 1.1.1.1 fallback DNS resolver</text>
+        </g>
+      </g>
+
+      <!-- Connectors 2 -> 3 -->
+      <g transform="translate(700, 200)">
+        <line x1="0" y1="0" x2="100" y2="0" stroke="#10b981" stroke-width="2"/>
+        <text x="50" y="-8" fill="#34d399" font-family="monospace" font-size="9" text-anchor="middle">Mongoose Driver</text>
+      </g>
+
+      <!-- 3. Persistence Tier -->
+      <g transform="translate(800, 0)">
+        <rect width="280" height="440" rx="16" fill="#0f172a" stroke="#8b5cf6" stroke-width="2"/>
+        <rect width="280" height="36" rx="16" fill="#5b21b6"/>
+        <text x="140" y="24" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="800" text-anchor="middle">DATABASE (MONGODB ATLAS)</text>
+
+        <g transform="translate(20, 60)">
+          <rect width="240" height="70" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#a78bfa" font-family="sans-serif" font-size="12" font-weight="700">auctionitems Collection</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Normalized USD currentBid, seller,</text>
+          <text x="16" y="58" fill="#94a3b8" font-family="sans-serif" font-size="10">openingTime, closingTime, isClosed</text>
+        </g>
+
+        <g transform="translate(20, 150)">
+          <rect width="240" height="70" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#a78bfa" font-family="sans-serif" font-size="12" font-weight="700">users Collection</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Bcrypt credentials, userType role,</text>
+          <text x="16" y="58" fill="#94a3b8" font-family="sans-serif" font-size="10">email, legal registration hashes</text>
+        </g>
+
+        <g transform="translate(20, 240)">
+          <rect width="240" height="70" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#a78bfa" font-family="sans-serif" font-size="12" font-weight="700">bids Collection</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Historical ledger, bidderId, bidAmount,</text>
+          <text x="16" y="58" fill="#94a3b8" font-family="sans-serif" font-size="10">timestamp audit trail</text>
+        </g>
+
+        <g transform="translate(20, 330)">
+          <rect width="240" height="70" rx="10" fill="#020617" stroke="#1e293b"/>
+          <text x="16" y="26" fill="#a78bfa" font-family="sans-serif" font-size="12" font-weight="700">statutory_records</text>
+          <text x="16" y="44" fill="#94a3b8" font-family="sans-serif" font-size="10">Executed deeds, tax invoices,</text>
+          <text x="16" y="58" fill="#94a3b8" font-family="sans-serif" font-size="10">provenance certificates</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  </g>
+</svg>
